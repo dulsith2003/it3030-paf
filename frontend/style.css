@@ -1,0 +1,83 @@
+:root {
+  --bg: #f4f7ff;
+  --card: #ffffff;
+  --text: #16324f;
+  --ok: #2b8a3e;
+  --bad: #c92a2a;
+  --pending: #e67700;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at 15% 15%, #ffe8cc, transparent 40%),
+    radial-gradient(circle at 85% 85%, #dbe4ff, transparent 45%),
+    var(--bg);
+}
+
+.shell {
+  width: min(92vw, 440px);
+  background: var(--card);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 18px 38px rgba(22, 50, 79, 0.16);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.desc {
+  margin-top: 0.55rem;
+  opacity: 0.8;
+}
+
+.status {
+  width: fit-content;
+  margin: 1.3rem auto 0;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.status.loading {
+  background: var(--pending);
+}
+
+.status.ok {
+  background: var(--ok);
+}
+
+.status.bad {
+  background: var(--bad);
+}
+
+.message {
+  min-height: 2.8rem;
+}
+
+button {
+  margin-top: 0.5rem;
+  border: 0;
+  border-radius: 10px;
+  background: #1c4d7d;
+  color: #fff;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.08);
+}

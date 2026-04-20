@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Campus - MongoDB Status</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main class="status-card">
+      <h1>Smart Campus</h1>
+      <p class="subtitle">MongoDB connection status at startup</p>
+
+      <div id="statusBadge" class="badge loading">Checking...</div>
+      <p id="statusMessage" class="message">Connecting to backend health endpoint...</p>
+
+      <button id="retryButton" type="button">Check Again</button>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
