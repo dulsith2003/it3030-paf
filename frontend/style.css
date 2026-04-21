@@ -363,6 +363,223 @@ a {
   gap: 0.9rem;
 }
 
+.student-dashboard {
+  display: grid;
+  gap: 1.05rem;
+}
+
+.student-dashboard-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.student-dashboard-head h2 {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+}
+
+.student-dashboard-head p {
+  margin: 0.26rem 0 0;
+  color: #586b90;
+}
+
+.report-incident-btn {
+  text-decoration: none;
+  border-radius: 12px;
+  background: linear-gradient(120deg, #5d4ef0, #4338de);
+  color: #fff;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(76, 58, 225, 0.28);
+}
+
+.student-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.student-stat-card {
+  border: 1px solid #ebeffb;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 8px 20px rgba(26, 47, 90, 0.07);
+}
+
+.student-stat-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #f8f9ff;
+}
+
+.student-stat-label {
+  margin: 0.7rem 0 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #7a89a6;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.student-stat-card strong {
+  font-size: 2rem;
+}
+
+.student-main-grid {
+  display: grid;
+  grid-template-columns: 1.65fr 0.85fr;
+  gap: 0.9rem;
+}
+
+.student-support-card {
+  border-radius: 18px;
+  padding: 1.5rem;
+  color: #eef3ff;
+  background:
+    radial-gradient(circle at 84% 18%, rgba(143, 153, 255, 0.16), transparent 45%),
+    linear-gradient(135deg, #101b4f 0%, #0d1642 100%);
+  box-shadow: 0 18px 40px rgba(8, 13, 37, 0.35);
+}
+
+.student-support-card h3 {
+  margin: 0;
+  font-size: 1.9rem;
+  color: #fff;
+}
+
+.student-support-card p {
+  margin: 0.6rem 0 1.1rem;
+  color: #ccd8ff;
+  max-width: 480px;
+  line-height: 1.45;
+}
+
+.support-link-btn {
+  display: inline-flex;
+  text-decoration: none;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  padding: 0.6rem 1rem;
+  border-radius: 11px;
+}
+
+.student-profile-card {
+  border-radius: 16px;
+  border: 1px solid #ebeffb;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(26, 47, 90, 0.07);
+  padding: 1.2rem;
+}
+
+.profile-top-label {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 0.77rem;
+  letter-spacing: 0.08em;
+  color: #7a89a6;
+  font-weight: 700;
+}
+
+.profile-role-box {
+  background: #f7faff;
+  border: 1px solid #e7edff;
+  border-radius: 12px;
+  margin-top: 1rem;
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.profile-role-box span {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #7a89a6;
+}
+
+.profile-role-box strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.profile-role-box strong i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.student-profile-card small {
+  margin-top: 0.95rem;
+  display: block;
+  line-height: 1.35;
+}
+
+.student-tickets-card {
+  max-width: 520px;
+  border: 1px solid #ebeffb;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(26, 47, 90, 0.07);
+  padding: 1.05rem 1.2rem;
+}
+
+.student-tickets-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.empty-ticket-copy {
+  margin: 1.8rem 0 1.2rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+  color: #8a96af;
+  font-size: 0.75rem;
+}
+
+.student-tickets-card a {
+  display: block;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.student-footer-note {
+  margin: 0.45rem 0 0;
+  text-align: center;
+  color: #7f8ba2;
+  font-size: 0.8rem;
+}
+
+.dashboard-variant-admin .report-incident-btn {
+  background: linear-gradient(120deg, #3556ef, #2744c9);
+}
+
+.dashboard-variant-admin .student-support-card {
+  background:
+    radial-gradient(circle at 84% 18%, rgba(143, 153, 255, 0.16), transparent 45%),
+    linear-gradient(135deg, #101b4f 0%, #0c1748 100%);
+}
+
+.dashboard-variant-tech .report-incident-btn {
+  background: linear-gradient(120deg, #0f7dd9, #1458b4);
+}
+
+.dashboard-variant-tech .student-support-card {
+  background:
+    radial-gradient(circle at 84% 18%, rgba(89, 197, 255, 0.2), transparent 45%),
+    linear-gradient(135deg, #0a314f 0%, #0f2740 100%);
+}
+
 .form-grid {
   display: grid;
   gap: 0.95rem;
@@ -580,6 +797,14 @@ small {
     max-width: 560px;
   }
 
+  .student-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .student-tickets-card {
+    max-width: 100%;
+  }
+
   .login-panel-right {
     min-height: 265px;
   }
@@ -595,5 +820,25 @@ small {
   .topbar nav a {
     animation: none;
     transition: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .student-dashboard-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .report-incident-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .student-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .student-support-card h3 {
+    font-size: 1.4rem;
   }
 }
