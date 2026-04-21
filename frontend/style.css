@@ -177,10 +177,15 @@ a {
   position: relative;
 }
 
-.login-field-wrap input {
+.login-field-wrap input,
+.login-field-wrap select {
   border: 1px solid #e2def7;
   background: #f2effc;
   border-radius: 11px;
+}
+
+.login-field-wrap select {
+  appearance: none;
 }
 
 .login-actions {
@@ -289,6 +294,13 @@ a {
   display: grid;
   align-items: center;
   justify-items: center;
+}
+
+.signup-panel-right {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(126, 166, 255, 0.35) 0, transparent 42%),
+    radial-gradient(circle at 76% 78%, rgba(150, 199, 255, 0.35) 0, transparent 48%),
+    linear-gradient(150deg, #3b8ff2 0%, #2264df 55%, #2d56cf 100%);
 }
 
 .right-panel-glow {
