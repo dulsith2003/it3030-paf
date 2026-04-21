@@ -11,10 +11,17 @@ export default function NavBar() {
 
   const isAdmin = user?.roles?.includes('ADMIN');
   const isTechnician = user?.roles?.includes('TECHNICIAN');
-  const isUser = user?.roles?.includes('USER') || (!isAdmin && !isTechnician);
   const dashboardPath = getDefaultDashboardPath(user);
-  const dashboardLabel = getDashboardLabelForUser(user);
   const primaryRole = getPrimaryRole(user);
+
+  const navItems = [
+    { to: dashboardPath, label: 'Dashboard', isActive: location.pathname.startsWith('/dashboard') },
+    { to: '/notifications', label: 'Notifications', isActive: location.pathname.startsWith('/notifications') }
+  ];
+
+  if (isAdmin) {
+    navItems.push({ to: '/admin/users', label: 'Admin Users', isActive: location.pathname.startsWith('/admin/users') });
+  }
 
   async function handleLogout() {
     try {
@@ -25,47 +32,44 @@ export default function NavBar() {
   }
 
   return (
-    <header className="topbar">
-      <h1>Smart Campus Portal</h1>
-      <nav>
-        {user ? (
-          <>
-            <Link className={location.pathname.startsWith('/dashboard') ? 'active' : ''} to={dashboardPath}>
-              {dashboardLabel}
-            </Link>
-            {(isUser || isTechnician || isAdmin) && (
-              <Link className={location.pathname.startsWith('/notifications') ? 'active' : ''} to="/notifications">
-                Notifications
-              </Link>
-            )}
-            {isAdmin && (
-              <Link className={location.pathname.startsWith('/admin/users') ? 'active' : ''} to="/admin/users">
-                Admin Users
-              </Link>
-            )}
-          </>
-        ) : (
-          <>
-            <Link className={location.pathname.startsWith('/login') ? 'active' : ''} to="/login">
-              Login
-            </Link>
-            <Link className={location.pathname.startsWith('/signup') ? 'active' : ''} to="/signup">
-              Signup
-            </Link>
-          </>
-        )}
-      </nav>
-      <div className="user-block">
-        {user ? (
-          <>
-            <span>{user.displayName || user.email}</span>
-            {primaryRole && <small>{primaryRole}</small>}
-            <button type="button" onClick={handleLogout}>Logout</button>
-          </>
-        ) : (
-          <span>Guest</span>
-        )}
+    <aside className="sidebar-shell">
+      <div className="sidebar-brand">
+        <span className="sidebar-brand-mark">⚡</span>
+        <span>SmartCampus</span>
       </div>
-    </header>
+
+      <nav className="sidebar-nav">
+        {navItems.map((item) => (
+          <Link key={item.to} className={item.isActive ? 'active' : ''} to={item.to}>
+            {item.label}
+          </Link>
+        ))}
+
+        {(isTechnician || isAdmin) && (
+          <button type="button" className="sidebar-muted-item" disabled>
+            Resources
+          </button>
+        )}
+        <button type="button" className="sidebar-muted-item" disabled>
+          Bookings
+        </button>
+        <button type="button" className="sidebar-muted-item" disabled>
+          Incidents
+        </button>
+      </nav>
+
+      <div className="sidebar-footer">
+        <div className="sidebar-user">
+          <strong>{user?.displayName || user?.email || 'Guest'}</strong>
+          {primaryRole && <small>{primaryRole}</small>}
+        </div>
+        <button type="button" className="sidebar-help-btn" disabled>
+          Help Support
+        </button>
+        <button type="button" className="sidebar-logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
+    </aside>
   );
 }
