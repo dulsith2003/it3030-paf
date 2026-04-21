@@ -88,10 +88,6 @@ export default function LoginPage() {
                 <span className="social-logo google-logo" aria-hidden="true">G</span>
                 <span>Login with Google</span>
               </button>
-              <button type="button" className="social-btn" disabled>
-                <span className="social-logo facebook-logo" aria-hidden="true">f</span>
-                <span>Login with Facebook</span>
-              </button>
             </div>
 
             <p className="auth-footnote">
