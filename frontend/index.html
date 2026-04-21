@@ -3,20 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Campus Frontend</title>
+    <title>Smart Campus Portal</title>
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <main class="shell">
-      <h1>Smart Campus Frontend</h1>
-      <p class="desc">MongoDB connection check at startup</p>
-
-      <div id="status" class="status loading">Checking...</div>
-      <p id="message" class="message">Connecting to backend...</p>
-
-      <button id="retry" type="button">Check Again</button>
-    </main>
-
-    <script type="module" src="/main.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
