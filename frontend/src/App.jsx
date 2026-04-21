@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import { useAuth } from './auth/AuthProvider';
 import { getDefaultDashboardPath } from './auth/roleRouting';
@@ -26,10 +26,25 @@ function DashboardRedirect() {
 }
 
 export default function App() {
+  const location = useLocation();
+  const { user } = useAuth();
+  const hideHeaderOnAuthPages = location.pathname === '/login' || location.pathname === '/signup';
+
   return (
-    <div className="app-shell">
-      <NavBar />
-      <main className="page-wrap">
+    <div className={`app-shell ${hideHeaderOnAuthPages ? 'auth-layout' : 'workspace-layout'}`}>
+      {!hideHeaderOnAuthPages && <NavBar />}
+      <main className={`page-wrap ${hideHeaderOnAuthPages ? '' : 'workspace-content'}`}>
+        {!hideHeaderOnAuthPages && (
+          <header className="workspace-topbar">
+            <div className="workspace-search">Search for resources, tickets...</div>
+            <div className="workspace-user-chip">
+              <span className="workspace-user-avatar">{(user?.displayName || user?.email || 'U').charAt(0).toUpperCase()}</span>
+              <div>
+                <strong>{user?.displayName || user?.email || 'User'}</strong>
+              </div>
+            </div>
+          </header>
+        )}
         <Routes>
           <Route path="/" element={<DashboardRedirect />} />
           <Route path="/dashboard" element={<DashboardRedirect />} />
