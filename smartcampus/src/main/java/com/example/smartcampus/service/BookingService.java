@@ -65,6 +65,14 @@ public class BookingService {
             .toList();
     }
 
+    public List<BookingResponseDTO> getAllBookings() {
+        requireAdmin();
+        return bookingRepository.findAll()
+            .stream()
+            .map(this::toResponse)
+            .toList();
+    }
+
     public BookingResponseDTO approveBooking(Long bookingId) {
         requireAdmin();
 

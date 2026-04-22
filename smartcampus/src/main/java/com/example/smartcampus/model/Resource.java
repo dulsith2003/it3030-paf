@@ -1,68 +1,36 @@
 package com.example.smartcampus.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "resources")
+@Document(collection = "resources")
 public class Resource {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ResourceType type;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ResourceStatus status;
-
-    @Column(nullable = false)
-    private String location;
 
     private Integer capacity;
 
-    @Column(length = 1000)
+    private String location;
+
+    private ResourceStatus status;
+
+    private LocalTime availableFrom;
+    private LocalTime availableTo;
+
     private String description;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
-        this.createdAt = now;
-        this.updatedAt = now;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -82,12 +50,12 @@ public class Resource {
         this.type = type;
     }
 
-    public ResourceStatus getStatus() {
-        return status;
+    public Integer getCapacity() {
+        return capacity;
     }
 
-    public void setStatus(ResourceStatus status) {
-        this.status = status;
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
     }
 
     public String getLocation() {
@@ -98,12 +66,28 @@ public class Resource {
         this.location = location;
     }
 
-    public Integer getCapacity() {
-        return capacity;
+    public ResourceStatus getStatus() {
+        return status;
     }
 
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
+    public void setStatus(ResourceStatus status) {
+        this.status = status;
+    }
+
+    public LocalTime getAvailableFrom() {
+        return availableFrom;
+    }
+
+    public void setAvailableFrom(LocalTime availableFrom) {
+        this.availableFrom = availableFrom;
+    }
+
+    public LocalTime getAvailableTo() {
+        return availableTo;
+    }
+
+    public void setAvailableTo(LocalTime availableTo) {
+        this.availableTo = availableTo;
     }
 
     public String getDescription() {
@@ -112,21 +96,5 @@ public class Resource {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

@@ -1,10 +1,8 @@
 package com.example.smartcampus.model;
 
 public enum ResourceType {
-    CLASSROOM,
+    LECTURE_HALL,
     LAB,
-    LIBRARY_ROOM,
-    AUDITORIUM,
-    SPORT_FACILITY,
-    OTHER
+    MEETING_ROOM,
+    EQUIPMENT
 }
