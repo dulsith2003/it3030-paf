@@ -3,18 +3,117 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Campus Frontend</title>
+    <title>Smart Campus | Module C</title>
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <main class="shell">
-      <h1>Smart Campus Frontend</h1>
-      <p class="desc">MongoDB connection check at startup</p>
+    <main class="app">
+      <header class="app-header">
+        <div>
+          <h1>Module C – Maintenance & Incident Ticketing</h1>
+          <p class="muted">
+            Frontend demo scope: create tickets, attachments, workflow updates,
+            technician assignment, and comment ownership controls.
+          </p>
+        </div>
+      </header>
 
-      <div id="status" class="status loading">Checking...</div>
-      <p id="message" class="message">Connecting to backend...</p>
+      <section class="panel context-panel">
+        <h2>Session Context</h2>
+        <div class="context-grid">
+          <label>
+            Display Name
+            <input id="currentUserName" type="text" placeholder="e.g. Malith" maxlength="40" />
+          </label>
+          <label>
+            Acting Role
+            <select id="currentUserRole">
+              <option value="USER">USER</option>
+              <option value="STAFF">STAFF</option>
+              <option value="ADMIN">ADMIN</option>
+            </select>
+          </label>
+        </div>
+      </section>
 
-      <button id="retry" type="button">Check Again</button>
+      <section class="layout">
+        <section class="panel create-ticket-panel">
+          <h2>Create Incident Ticket</h2>
+          <form id="ticketForm" novalidate>
+            <div class="form-grid">
+              <label>
+                Resource / Location
+                <input id="resourceLocation" name="resourceLocation" type="text" required maxlength="100" placeholder="Lab A / Projector 03" />
+              </label>
+              <label>
+                Category
+                <select id="category" name="category" required>
+                  <option value="">Select category</option>
+                  <option>Electrical</option>
+                  <option>Hardware</option>
+                  <option>Network</option>
+                  <option>Safety</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label>
+                Priority
+                <select id="priority" name="priority" required>
+                  <option value="">Select priority</option>
+                  <option>LOW</option>
+                  <option selected>MEDIUM</option>
+                  <option>HIGH</option>
+                  <option>CRITICAL</option>
+                </select>
+              </label>
+              <label>
+                Preferred Contact
+                <input id="preferredContact" name="preferredContact" type="text" required maxlength="80" placeholder="phone or email" />
+              </label>
+            </div>
+
+            <label>
+              Description
+              <textarea id="description" name="description" required maxlength="600" rows="4" placeholder="Describe what happened..."></textarea>
+            </label>
+
+            <label>
+              Evidence Attachments (max 3 images)
+              <input id="attachments" name="attachments" type="file" accept="image/*" multiple />
+            </label>
+
+            <p id="formMessage" class="form-message"></p>
+
+            <button type="submit" class="primary-btn">Create Ticket</button>
+          </form>
+        </section>
+
+        <section class="panel list-panel">
+          <div class="list-header">
+            <h2>Tickets</h2>
+            <label class="compact">
+              Filter by Status
+              <select id="statusFilter">
+                <option value="ALL">ALL</option>
+                <option value="OPEN">OPEN</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="RESOLVED">RESOLVED</option>
+                <option value="CLOSED">CLOSED</option>
+                <option value="REJECTED">REJECTED</option>
+              </select>
+            </label>
+          </div>
+
+          <ul id="ticketList" class="ticket-list"></ul>
+        </section>
+      </section>
+
+      <section class="panel details-panel">
+        <h2>Ticket Details</h2>
+        <div id="ticketDetails" class="ticket-details empty-state">
+          Select a ticket to manage workflow, technician assignment, and comments.
+        </div>
+      </section>
     </main>
 
     <script type="module" src="/main.js"></script>
