@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.smartcampus.model.Resource;
+import com.example.smartcampus.model.ResourceStatus;
+import com.example.smartcampus.model.ResourceType;
 import com.example.smartcampus.repository.ResourceRepository;
 
 @Service
@@ -22,6 +24,28 @@ public class ResourceService {
     }
 
     public List<Resource> getAll() {
+        return resourceRepository.findAll();
+    }
+
+    public List<Resource> search(String type, String location, Integer capacity, String status) {
+        if (hasText(type)) {
+            ResourceType resourceType = parseResourceType(type);
+            if (resourceType == null) {
+                return List.of();
+            }
+            return resourceRepository.findByType(resourceType);
+        } else if (hasText(location)) {
+            return resourceRepository.findByLocationContainingIgnoreCase(location.trim());
+        } else if (capacity != null) {
+            return resourceRepository.findByCapacityGreaterThanEqual(capacity);
+        } else if (hasText(status)) {
+            ResourceStatus resourceStatus = parseResourceStatus(status);
+            if (resourceStatus == null) {
+                return List.of();
+            }
+            return resourceRepository.findByStatus(resourceStatus);
+        }
+
         return resourceRepository.findAll();
     }
 
@@ -54,6 +78,26 @@ public class ResourceService {
     private void validateCapacity(Resource resource) {
         if (resource.getCapacity() == null || resource.getCapacity() <= 0) {
             throw new RuntimeException("Capacity must be greater than 0");
+        }
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
+
+    private ResourceType parseResourceType(String value) {
+        try {
+            return ResourceType.valueOf(value.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
+    }
+
+    private ResourceStatus parseResourceStatus(String value) {
+        try {
+            return ResourceStatus.valueOf(value.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            return null;
         }
     }
 }
