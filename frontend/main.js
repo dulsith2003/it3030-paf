@@ -1,4 +1,3 @@
-const STORE_KEY = 'module-c-tickets-v1';
 const USER_KEY = 'module-c-current-user-v1';
 
 const ticketForm = document.getElementById('ticketForm');
@@ -11,14 +10,16 @@ const currentUserRole = document.getElementById('currentUserRole');
 
 const workflow = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
 
-let tickets = loadTickets();
-let selectedTicketId = tickets[0]?.id ?? null;
+let tickets = [];
+let selectedTicketId = null;
 
 initCurrentUser();
-renderAll();
+init();
 
 ticketForm.addEventListener('submit', onSubmitTicket);
-statusFilter.addEventListener('change', renderTicketList);
+statusFilter.addEventListener('change', () => {
+  refreshTickets();
+});
 currentUserName.addEventListener('input', onCurrentUserChange);
 currentUserRole.addEventListener('change', onCurrentUserChange);
 
@@ -28,10 +29,14 @@ function initCurrentUser() {
   currentUserRole.value = saved?.role || 'USER';
 }
 
+async function init() {
+  await refreshTickets();
+}
+
 function onCurrentUserChange() {
   const user = getCurrentUser();
   localStorage.setItem(USER_KEY, JSON.stringify(user));
-  renderTicketDetails();
+  refreshTickets();
 }
 
 function getCurrentUser() {
@@ -41,7 +46,7 @@ function getCurrentUser() {
   };
 }
 
-function onSubmitTicket(event) {
+async function onSubmitTicket(event) {
   event.preventDefault();
   formMessage.textContent = '';
 
@@ -66,58 +71,40 @@ function onSubmitTicket(event) {
   }
 
   const user = getCurrentUser();
-  const now = new Date().toISOString();
+  try {
+    const createdTicket = await apiFetch(
+      '/api/tickets',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          resourceLocation: String(formData.get('resourceLocation')).trim(),
+          category: String(formData.get('category')),
+          description: String(formData.get('description')).trim(),
+          priority: String(formData.get('priority')),
+          preferredContact: String(formData.get('preferredContact')).trim(),
+          attachments: [...files].map((file) => ({
+            fileName: file.name,
+            contentType: file.type,
+            sizeKb: Math.max(1, Math.round(file.size / 1024)),
+          })),
+        }),
+      },
+      user,
+    );
 
-  const newTicket = {
-    id: `T-${Date.now().toString().slice(-6)}`,
-    createdAt: now,
-    updatedAt: now,
-    createdBy: user.name,
-    resourceLocation: String(formData.get('resourceLocation')).trim(),
-    category: String(formData.get('category')),
-    description: String(formData.get('description')).trim(),
-    priority: String(formData.get('priority')),
-    preferredContact: String(formData.get('preferredContact')).trim(),
-    status: 'OPEN',
-    rejectionReason: '',
-    resolutionNotes: '',
-    assignedTechnician: '',
-    attachments: [...files].map((file) => ({
-      name: file.name,
-      sizeKb: Math.max(1, Math.round(file.size / 1024)),
-      type: file.type,
-    })),
-    comments: [],
-  };
-
-  tickets = [newTicket, ...tickets];
-  selectedTicketId = newTicket.id;
-  persistTickets();
-  ticketForm.reset();
-  document.getElementById('priority').value = 'MEDIUM';
-  setFormMessage(`Ticket ${newTicket.id} created successfully.`, false);
-  renderAll();
+    ticketForm.reset();
+    document.getElementById('priority').value = 'MEDIUM';
+    setFormMessage(`Ticket ${createdTicket.id} created successfully.`, false);
+    selectedTicketId = createdTicket.id;
+    await refreshTickets();
+  } catch (error) {
+    setFormMessage(error.message, true);
+  }
 }
 
 function setFormMessage(message, isError) {
   formMessage.textContent = message;
   formMessage.className = isError ? 'form-message error' : 'form-message success';
-}
-
-function loadTickets() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(STORE_KEY) ?? '[]');
-    if (Array.isArray(parsed)) {
-      return parsed;
-    }
-    return [];
-  } catch {
-    return [];
-  }
-}
-
-function persistTickets() {
-  localStorage.setItem(STORE_KEY, JSON.stringify(tickets));
 }
 
 function renderAll() {
@@ -180,6 +167,9 @@ function renderTicketDetails() {
   const nextStatus = getNextStatus(ticket.status);
   const canReject = user.role === 'ADMIN' && ticket.status !== 'REJECTED' && ticket.status !== 'CLOSED';
   const canManageTicket = user.role === 'ADMIN' || user.role === 'STAFF';
+  const assignedTechnician = ticket.assignedTechnician ?? '';
+  const resolutionNotes = ticket.resolutionNotes ?? '';
+  const rejectionReason = ticket.rejectionReason ?? '';
 
   ticketDetails.innerHTML = `
     <div class="details-head">
@@ -206,7 +196,7 @@ function renderTicketDetails() {
           ? ticket.attachments
               .map(
                 (file) =>
-                  `<li>${escapeHtml(file.name)} (${file.sizeKb} KB)</li>`,
+                  `<li>${escapeHtml(file.fileName ?? file.name ?? 'Attachment')} (${file.sizeKb} KB)</li>`,
               )
               .join('')
           : '<li class="muted">No attachments.</li>'}
@@ -216,15 +206,15 @@ function renderTicketDetails() {
     <div class="actions-grid">
       <label>
         Assigned Technician
-        <input id="assignedTechnicianInput" type="text" value="${escapeHtml(ticket.assignedTechnician)}" placeholder="e.g. Nimesh Perera" ${canManageTicket ? '' : 'disabled'} />
+        <input id="assignedTechnicianInput" type="text" value="${escapeHtml(assignedTechnician)}" placeholder="e.g. Nimesh Perera" ${canManageTicket ? '' : 'disabled'} />
       </label>
       <label>
         Resolution Notes
-        <textarea id="resolutionNotesInput" rows="3" placeholder="Add fix summary..." ${canManageTicket ? '' : 'disabled'}>${escapeHtml(ticket.resolutionNotes)}</textarea>
+        <textarea id="resolutionNotesInput" rows="3" placeholder="Add fix summary..." ${canManageTicket ? '' : 'disabled'}>${escapeHtml(resolutionNotes)}</textarea>
       </label>
       <label>
         Rejection Reason (admin)
-        <input id="rejectionReasonInput" type="text" value="${escapeHtml(ticket.rejectionReason)}" placeholder="Reason required when rejecting" ${canReject ? '' : 'disabled'} />
+        <input id="rejectionReasonInput" type="text" value="${escapeHtml(rejectionReason)}" placeholder="Reason required when rejecting" ${canReject ? '' : 'disabled'} />
       </label>
       <div class="buttons-row">
         <button id="saveMetaBtn" type="button" ${canManageTicket ? '' : 'disabled'}>Save Assignment/Notes</button>
@@ -233,6 +223,7 @@ function renderTicketDetails() {
         </button>
         <button id="rejectBtn" type="button" ${canReject ? '' : 'disabled'}>Reject Ticket</button>
       </div>
+      <p id="detailsActionMessage" class="form-message"></p>
     </div>
 
     <section class="comments-section">
@@ -256,56 +247,99 @@ function bindDetailsActions(ticketId, user) {
   const rejectBtn = document.getElementById('rejectBtn');
   const commentForm = document.getElementById('commentForm');
   const commentsList = document.getElementById('commentsList');
+  const detailsActionMessage = document.getElementById('detailsActionMessage');
 
-  saveMetaBtn?.addEventListener('click', () => {
-    updateTicket(ticketId, (ticket) => {
-      ticket.assignedTechnician = document.getElementById('assignedTechnicianInput').value.trim();
-      ticket.resolutionNotes = document.getElementById('resolutionNotesInput').value.trim();
-      ticket.updatedAt = new Date().toISOString();
-    });
+  const showDetailsMessage = (message, isError = false) => {
+    if (!detailsActionMessage) return;
+    detailsActionMessage.textContent = message;
+    detailsActionMessage.className = isError ? 'form-message error' : 'form-message success';
+  };
+
+  saveMetaBtn?.addEventListener('click', async () => {
+    try {
+      await apiFetch(
+        `/api/tickets/${ticketId}/assignment`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({
+            assignedTechnician: document.getElementById('assignedTechnicianInput').value.trim(),
+            resolutionNotes: document.getElementById('resolutionNotesInput').value.trim(),
+          }),
+        },
+        user,
+      );
+      await refreshTickets(ticketId);
+      showDetailsMessage('Assignment and resolution notes saved.');
+    } catch (error) {
+      showDetailsMessage(error.message, true);
+    }
   });
 
-  advanceStatusBtn?.addEventListener('click', () => {
-    updateTicket(ticketId, (ticket) => {
-      const next = getNextStatus(ticket.status);
-      if (!next) return;
-      ticket.status = next;
-      ticket.updatedAt = new Date().toISOString();
-    });
+  advanceStatusBtn?.addEventListener('click', async () => {
+    const ticket = tickets.find((current) => current.id === ticketId);
+    const next = ticket ? getNextStatus(ticket.status) : null;
+    if (!next) return;
+
+    try {
+      await apiFetch(
+        `/api/tickets/${ticketId}/status`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({ status: next }),
+        },
+        user,
+      );
+      await refreshTickets(ticketId);
+      showDetailsMessage(`Ticket moved to ${next}.`);
+    } catch (error) {
+      showDetailsMessage(error.message, true);
+    }
   });
 
-  rejectBtn?.addEventListener('click', () => {
+  rejectBtn?.addEventListener('click', async () => {
     const reason = document.getElementById('rejectionReasonInput').value.trim();
     if (!reason) {
       alert('Rejection reason is required.');
       return;
     }
-    updateTicket(ticketId, (ticket) => {
-      ticket.status = 'REJECTED';
-      ticket.rejectionReason = reason;
-      ticket.updatedAt = new Date().toISOString();
-    });
+    try {
+      await apiFetch(
+        `/api/tickets/${ticketId}/status`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({ status: 'REJECTED', rejectionReason: reason }),
+        },
+        user,
+      );
+      await refreshTickets(ticketId);
+      showDetailsMessage('Ticket rejected.');
+    } catch (error) {
+      showDetailsMessage(error.message, true);
+    }
   });
 
-  commentForm?.addEventListener('submit', (event) => {
+  commentForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const textInput = document.getElementById('commentText');
     const text = textInput.value.trim();
     if (!text) return;
 
-    updateTicket(ticketId, (ticket) => {
-      ticket.comments.push({
-        id: `C-${Date.now().toString().slice(-7)}`,
-        text,
-        author: user.name,
-        role: user.role,
-        createdAt: new Date().toISOString(),
-      });
-      ticket.updatedAt = new Date().toISOString();
-    });
+    try {
+      await apiFetch(
+        `/api/tickets/${ticketId}/comments`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ text }),
+        },
+        user,
+      );
+      await refreshTickets(ticketId);
+    } catch (error) {
+      alert(error.message);
+    }
   });
 
-  commentsList?.addEventListener('click', (event) => {
+  commentsList?.addEventListener('click', async (event) => {
     const actionButton = event.target.closest('button[data-action]');
     if (!actionButton) return;
 
@@ -313,30 +347,43 @@ function bindDetailsActions(ticketId, user) {
     if (!commentId) return;
 
     if (action === 'delete') {
-      updateTicket(ticketId, (ticket) => {
-        const comment = ticket.comments.find((item) => item.id === commentId);
-        if (!comment || !canModifyComment(user, comment)) return;
-        ticket.comments = ticket.comments.filter((item) => item.id !== commentId);
-        ticket.updatedAt = new Date().toISOString();
-      });
+      try {
+        await apiFetch(
+          `/api/tickets/${ticketId}/comments/${commentId}`,
+          { method: 'DELETE' },
+          user,
+        );
+        await refreshTickets(ticketId);
+      } catch (error) {
+        alert(error.message);
+      }
       return;
     }
 
     if (action === 'edit') {
-      updateTicket(ticketId, (ticket) => {
-        const comment = ticket.comments.find((item) => item.id === commentId);
-        if (!comment || !canModifyComment(user, comment)) return;
+      const ticket = tickets.find((current) => current.id === ticketId);
+      const comment = ticket?.comments.find((current) => current.id === commentId);
+      if (!comment || !canModifyComment(user, comment)) return;
 
-        const updatedText = prompt('Edit comment', comment.text);
-        if (updatedText === null) return;
+      const updatedText = prompt('Edit comment', comment.text);
+      if (updatedText === null) return;
 
-        const cleaned = updatedText.trim();
-        if (!cleaned) return;
+      const cleaned = updatedText.trim();
+      if (!cleaned) return;
 
-        comment.text = cleaned;
-        comment.editedAt = new Date().toISOString();
-        ticket.updatedAt = new Date().toISOString();
-      });
+      try {
+        await apiFetch(
+          `/api/tickets/${ticketId}/comments/${commentId}`,
+          {
+            method: 'PATCH',
+            body: JSON.stringify({ text: cleaned }),
+          },
+          user,
+        );
+        await refreshTickets(ticketId);
+      } catch (error) {
+        alert(error.message);
+      }
     }
   });
 }
@@ -349,11 +396,13 @@ function renderCommentsHtml(ticket, user) {
   return ticket.comments
     .map((comment) => {
       const canModify = canModifyComment(user, comment);
+      const authorName = comment.authorName ?? comment.author ?? 'Unknown';
+      const edited = Boolean(comment.updatedAt && comment.updatedAt !== comment.createdAt);
       return `
         <li class="comment-item">
           <div class="comment-head">
-            <strong>${escapeHtml(comment.author)}</strong>
-            <small class="muted">${formatDate(comment.createdAt)}${comment.editedAt ? ' • edited' : ''}</small>
+            <strong>${escapeHtml(authorName)}</strong>
+            <small class="muted">${formatDate(comment.createdAt)}${edited ? ' • edited' : ''}</small>
           </div>
           <p>${escapeHtml(comment.text)}</p>
           <div class="comment-actions">
@@ -367,7 +416,8 @@ function renderCommentsHtml(ticket, user) {
 }
 
 function canModifyComment(user, comment) {
-  return user.role === 'ADMIN' || user.name === comment.author;
+  const authorName = comment.authorName ?? comment.author;
+  return user.role === 'ADMIN' || user.name === authorName;
 }
 
 function getNextStatus(status) {
@@ -378,17 +428,60 @@ function getNextStatus(status) {
   return workflow[index + 1];
 }
 
-function updateTicket(ticketId, updater) {
-  tickets = tickets.map((ticket) => {
-    if (ticket.id !== ticketId) return ticket;
+async function refreshTickets(preferredTicketId = null) {
+  const user = getCurrentUser();
+  const selectedStatus = statusFilter.value;
+  const query = new URLSearchParams();
 
-    const clone = structuredClone(ticket);
-    updater(clone);
-    return clone;
+  if (selectedStatus !== 'ALL') {
+    query.set('status', selectedStatus);
+  }
+  if (user.role === 'USER') {
+    query.set('mine', 'true');
+  }
+
+  try {
+    const response = await apiFetch(`/api/tickets?${query.toString()}`, { method: 'GET' }, user);
+    tickets = Array.isArray(response) ? response : [];
+
+    const candidateId = preferredTicketId ?? selectedTicketId;
+    const exists = candidateId && tickets.some((ticket) => ticket.id === candidateId);
+    selectedTicketId = exists ? candidateId : (tickets[0]?.id ?? null);
+    renderAll();
+  } catch (error) {
+    setFormMessage(error.message, true);
+    tickets = [];
+    selectedTicketId = null;
+    renderAll();
+  }
+}
+
+async function apiFetch(path, options, user) {
+  const response = await fetch(path, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-User-Name': user.name,
+      'X-User-Role': user.role,
+      ...(options?.headers || {}),
+    },
   });
 
-  persistTickets();
-  renderAll();
+  const text = await response.text();
+  let data = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { message: text };
+    }
+  }
+
+  if (!response.ok) {
+    throw new Error(data?.message || `Request failed with status ${response.status}`);
+  }
+
+  return data;
 }
 
 function formatDate(isoDate) {
