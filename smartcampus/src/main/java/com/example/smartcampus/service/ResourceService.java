@@ -12,20 +12,21 @@ import com.example.smartcampus.repository.ResourceRepository;
 @Service
 public class ResourceService {
 
-    private final ResourceRepository resourceRepository;
+	private final ResourceRepository resourceRepository;
 
-    public ResourceService(ResourceRepository resourceRepository) {
-        this.resourceRepository = resourceRepository;
-    }
+	public ResourceService(ResourceRepository resourceRepository) {
+		this.resourceRepository = resourceRepository;
+	}
 
-    public Resource create(Resource resource) {
-        validateCapacity(resource);
-        return resourceRepository.save(resource);
-    }
+	public Resource create(Resource resource) {
+		validateCapacity(resource);
+		resource.setId(null);
+		return resourceRepository.save(resource);
+	}
 
-    public List<Resource> getAll() {
-        return resourceRepository.findAll();
-    }
+	public List<Resource> getAll() {
+		return resourceRepository.findAll();
+	}
 
     public List<Resource> search(String type, String location, Integer capacity, String status) {
         if (hasText(type)) {
@@ -54,30 +55,30 @@ public class ResourceService {
             .orElseThrow(() -> new RuntimeException("Resource not found with id: " + id));
     }
 
-    public Resource update(String id, Resource updated) {
-        validateCapacity(updated);
-        Resource existing = getById(id);
+	public Resource update(String id, Resource updated) {
+		validateCapacity(updated);
 
-        existing.setName(updated.getName());
-        existing.setType(updated.getType());
-        existing.setCapacity(updated.getCapacity());
-        existing.setLocation(updated.getLocation());
-        existing.setStatus(updated.getStatus());
-        existing.setAvailableFrom(updated.getAvailableFrom());
-        existing.setAvailableTo(updated.getAvailableTo());
-        existing.setDescription(updated.getDescription());
+		Resource existing = getById(id);
+		existing.setName(updated.getName());
+		existing.setType(updated.getType());
+		existing.setCapacity(updated.getCapacity());
+		existing.setLocation(updated.getLocation());
+		existing.setStatus(updated.getStatus());
+		existing.setAvailableFrom(updated.getAvailableFrom());
+		existing.setAvailableTo(updated.getAvailableTo());
+		existing.setDescription(updated.getDescription());
 
-        return resourceRepository.save(existing);
-    }
+		return resourceRepository.save(existing);
+	}
 
-    public void delete(String id) {
-        Resource existing = getById(id);
-        resourceRepository.delete(existing);
-    }
+	public void delete(String id) {
+		Resource existing = getById(id);
+		resourceRepository.delete(existing);
+	}
 
     private void validateCapacity(Resource resource) {
         if (resource.getCapacity() == null || resource.getCapacity() <= 0) {
-            throw new RuntimeException("Capacity must be greater than 0");
+            throw new IllegalArgumentException("Capacity must be greater than 0");
         }
     }
 
