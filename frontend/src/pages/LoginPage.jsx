@@ -1,41 +1,24 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useLocation, useNavigate } from 'react-router-dom';
-
-import { useAuth } from '../auth/AuthProvider';
-import { getDefaultDashboardPath } from '../auth/roleRouting';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { user, loading, loginWithGoogle, signin } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!loading && user) {
-      const redirectTo = location.state?.from || getDefaultDashboardPath(user);
-      navigate(redirectTo, { replace: true });
-    }
-  }, [loading, user, location, navigate]);
 
   async function handleSignIn(event) {
     event.preventDefault();
     setIsSubmitting(true);
-    setError('');
+    setError("");
 
-    try {
-      const signedInUser = await signin({ email, password });
-      const redirectTo = location.state?.from || getDefaultDashboardPath(signedInUser);
-      navigate(redirectTo, { replace: true });
-    } catch (err) {
-      setError(err.message || 'Signin failed');
-    } finally {
-      setIsSubmitting(false);
-    }
+    navigate("/resources");
+    setIsSubmitting(false);
+  }
+
+  function handleDirectNavigation() {
+    navigate("/resources");
   }
 
   return (
@@ -77,16 +60,18 @@ export default function LoginPage() {
 
               <div className="auth-actions login-actions">
                 <button type="submit" className="login-submit-btn" disabled={isSubmitting}>
-                  {isSubmitting ? 'Signing in...' : 'Login Now'}
+                  {isSubmitting ? "Signing in..." : "Login Now"}
                 </button>
               </div>
             </form>
 
             <div className="social-block">
-              <p className="social-title"><span>Login with Others</span></p>
-              <button type="button" className="social-btn" onClick={loginWithGoogle}>
+              <p className="social-title">
+                <span>Quick Access</span>
+              </p>
+              <button type="button" className="social-btn" onClick={handleDirectNavigation}>
                 <span className="social-logo google-logo" aria-hidden="true">G</span>
-                <span>Login with Google</span>
+                <span>Go to Resources</span>
               </button>
             </div>
 
