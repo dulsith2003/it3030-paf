@@ -19,8 +19,9 @@ public class User {
 
     private String displayName;
     private String avatarUrl;
-    private AuthProvider authProvider;
-    private String passwordHash;
+    private String password;
+    private AuthProvider provider;
+    private String providerId;
     private Set<Role> roles = new HashSet<>();
     private Instant lastLoginAt;
     private Instant createdAt;
@@ -59,19 +60,43 @@ public class User {
     }
 
     public AuthProvider getAuthProvider() {
-        return authProvider;
+        return provider;
     }
 
     public void setAuthProvider(AuthProvider authProvider) {
-        this.authProvider = authProvider;
+        this.provider = authProvider;
+    }
+
+    public AuthProvider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(AuthProvider provider) {
+        this.provider = provider;
     }
 
     public String getPasswordHash() {
-        return passwordHash;
+        return password;
     }
 
     public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+        this.password = passwordHash;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
     }
 
     public Set<Role> getRoles() {
