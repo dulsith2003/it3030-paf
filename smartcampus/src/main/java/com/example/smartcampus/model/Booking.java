@@ -1,79 +1,48 @@
 package com.example.smartcampus.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "bookings")
+@Document(collection = "bookings")
 public class Booking {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false)
-    private Long resourceId;
+    private String resourceId;
 
-    @Column(nullable = false)
     private String userId;
 
-    @Column(nullable = false)
-    private LocalDateTime startTime;
+    private LocalDate date;
 
-    @Column(nullable = false)
-    private LocalDateTime endTime;
+    private LocalTime startTime;
 
-    @Column(length = 500)
+    private LocalTime endTime;
+
     private String purpose;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    private Integer expectedAttendees;
+
     private BookingStatus status;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private String adminReason;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
-        this.createdAt = now;
-        this.updatedAt = now;
-        if (this.status == null) {
-            this.status = BookingStatus.PENDING;
-        }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Long getResourceId() {
+    public String getResourceId() {
         return resourceId;
     }
 
-    public void setResourceId(Long resourceId) {
+    public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
     }
 
@@ -85,19 +54,27 @@ public class Booking {
         this.userId = userId;
     }
 
-    public LocalDateTime getStartTime() {
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 
@@ -109,6 +86,14 @@ public class Booking {
         this.purpose = purpose;
     }
 
+    public Integer getExpectedAttendees() {
+        return expectedAttendees;
+    }
+
+    public void setExpectedAttendees(Integer expectedAttendees) {
+        this.expectedAttendees = expectedAttendees;
+    }
+
     public BookingStatus getStatus() {
         return status;
     }
@@ -117,19 +102,11 @@ public class Booking {
         this.status = status;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public String getAdminReason() {
+        return adminReason;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setAdminReason(String adminReason) {
+        this.adminReason = adminReason;
     }
 }

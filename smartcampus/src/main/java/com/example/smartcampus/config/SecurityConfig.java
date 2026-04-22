@@ -8,12 +8,9 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,17 +23,14 @@ import java.util.Arrays;
 @Configuration
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
     private final LocalUserDetailsService localUserDetailsService;
 
     @Value("${app.security.frontend-origins:http://localhost:5173,http://localhost:5174}")
     private String frontendOrigins;
 
     public SecurityConfig(
-        CustomOAuth2UserService customOAuth2UserService,
         LocalUserDetailsService localUserDetailsService
     ) {
-        this.customOAuth2UserService = customOAuth2UserService;
         this.localUserDetailsService = localUserDetailsService;
     }
 
@@ -45,27 +39,11 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-            .exceptionHandling(exception ->
-                exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-            )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/error",
-                    "/api/health/**",
-                    "/oauth2/**",
-                    "/login/**",
-                    "/api/auth/login/google",
-                    "/api/auth/signup",
-                    "/api/auth/signin"
-                ).permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/auth/logout").authenticated()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/notifications/**").hasAnyRole("USER", "ADMIN", "TECHNICIAN")
-                .anyRequest().authenticated()
+                .requestMatchers("/api/**").permitAll()
+                .anyRequest().permitAll()
             )
-            .oauth2Login(oauth -> oauth.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)))
+            .oauth2Login(AbstractHttpConfigurer::disable)
             .logout(logout -> logout
                 .logoutUrl("/api/auth/logout")
                 .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpStatus.OK.value()))
