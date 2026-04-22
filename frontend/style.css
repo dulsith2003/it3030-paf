@@ -1,10 +1,12 @@
 :root {
-  --bg: #f4f7ff;
-  --surface: #ffffff;
-  --text: #12263a;
-  --muted: #5d6d7e;
-  --line: #d8e2ef;
-  --primary: #1c4d7d;
+  --bg: #eef3ff;
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-strong: rgba(255, 255, 255, 0.9);
+  --text: #0f2438;
+  --muted: #55687b;
+  --line: rgba(164, 182, 206, 0.45);
+  --primary: #2f5aff;
+  --primary-dark: #1b44e7;
   --open: #0f7b6c;
   --progress: #b56f00;
   --resolved: #2b8a3e;
@@ -21,29 +23,122 @@
 }
 
 body {
+  position: relative;
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at 10% 5%, #ffe8cc, transparent 35%),
-    radial-gradient(circle at 90% 90%, #dbe4ff, transparent 40%),
+  background:
+    radial-gradient(circle at 8% 9%, rgba(255, 174, 79, 0.34), transparent 36%),
+    radial-gradient(circle at 89% 84%, rgba(122, 150, 255, 0.45), transparent 42%),
+    radial-gradient(circle at 40% 95%, rgba(117, 228, 205, 0.22), transparent 34%),
     var(--bg);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 320px;
+  height: 320px;
+  border-radius: 999px;
+  filter: blur(48px);
+  z-index: -1;
+  opacity: 0.55;
+  animation: blob-float 14s ease-in-out infinite;
+}
+
+body::before {
+  top: -90px;
+  right: -80px;
+  background: rgba(86, 122, 255, 0.56);
+}
+
+body::after {
+  left: -90px;
+  bottom: -80px;
+  background: rgba(85, 210, 182, 0.48);
+  animation-delay: 2.4s;
 }
 
 .app {
   width: min(1200px, 95vw);
-  margin: 1.5rem auto 2rem;
+  margin: 1.7rem auto 2.2rem;
   display: grid;
-  gap: 1rem;
+  gap: 1.1rem;
+  animation: app-rise 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.app-header {
+  background: linear-gradient(128deg, rgba(47, 90, 255, 0.12), rgba(117, 228, 205, 0.12));
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 18px;
+  padding: 1.15rem 1.2rem;
+  box-shadow: 0 18px 46px rgba(23, 46, 88, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fade-slide 520ms ease;
 }
 
 .app-header h1 {
   margin: 0;
-  font-size: 1.7rem;
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+  letter-spacing: 0.02em;
+  background: linear-gradient(95deg, #203a57, #2f5aff 45%, #1ca7aa 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% 100%;
+  animation: shimmer 3.8s linear infinite;
+}
+
+.header-sub {
+  margin: 0.4rem 0 0.75rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.workflow-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.wf {
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.26rem 0.66rem;
+  box-shadow: 0 6px 14px rgba(9, 24, 54, 0.18);
+  animation: pop-in 480ms ease both;
+}
+
+.wf.open {
+  background: var(--open);
+}
+
+.wf.in-progress {
+  background: var(--progress);
+}
+
+.wf.resolved {
+  background: var(--resolved);
+}
+
+.wf.closed {
+  background: var(--closed);
+}
+
+.wf.rejected {
+  background: var(--rejected);
 }
 
 h2 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.08rem;
+  letter-spacing: 0.01em;
 }
 
 h3,
@@ -54,9 +149,31 @@ h4 {
 .panel {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 1rem;
-  box-shadow: 0 10px 22px rgba(18, 38, 58, 0.08);
+  border-radius: 16px;
+  padding: 1.05rem;
+  box-shadow: 0 18px 38px rgba(18, 38, 58, 0.11);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  animation: fade-slide 560ms ease;
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.panel:nth-of-type(2) {
+  animation-delay: 90ms;
+}
+
+.panel:nth-of-type(3) {
+  animation-delay: 160ms;
+}
+
+.panel:nth-of-type(4) {
+  animation-delay: 220ms;
+}
+
+.panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 44px rgba(18, 38, 58, 0.16);
+  border-color: rgba(74, 120, 255, 0.35);
 }
 
 .layout {
@@ -93,10 +210,20 @@ button {
 input,
 select,
 textarea {
-  border: 1px solid #bcccdc;
-  border-radius: 10px;
+  border: 1px solid rgba(167, 184, 208, 0.9);
+  border-radius: 11px;
   padding: 0.55rem 0.65rem;
-  background: #fff;
+  background: var(--surface-strong);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: rgba(47, 90, 255, 0.72);
+  box-shadow: 0 0 0 4px rgba(47, 90, 255, 0.13);
+  transform: translateY(-1px);
 }
 
 textarea {
@@ -105,16 +232,19 @@ textarea {
 
 button {
   border: 0;
-  border-radius: 10px;
-  background: var(--primary);
+  border-radius: 11px;
+  background: linear-gradient(140deg, var(--primary), var(--primary-dark));
   color: #fff;
   padding: 0.55rem 0.85rem;
   font-weight: 700;
   cursor: pointer;
+  transition: transform 150ms ease, filter 150ms ease, box-shadow 150ms ease;
+  box-shadow: 0 9px 20px rgba(36, 71, 208, 0.25);
 }
 
 button:hover:enabled {
-  filter: brightness(1.08);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
 }
 
 button:disabled {
@@ -124,6 +254,17 @@ button:disabled {
 
 .primary-btn {
   margin-top: 0.2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.primary-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.32) 50%, transparent 80%);
+  transform: translateX(-120%);
+  animation: btn-glint 2.8s ease-in-out infinite;
 }
 
 .form-message {
@@ -162,14 +303,42 @@ button:disabled {
   overflow: auto;
 }
 
+.ticket-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.ticket-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(47, 90, 255, 0.5), rgba(47, 90, 255, 0.28));
+  border-radius: 999px;
+}
+
 .ticket-item {
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #f8fbff;
+  border-radius: 13px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(241, 246, 255, 0.72));
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  animation: card-in 400ms ease both;
+}
+
+.ticket-item:nth-child(1) { animation-delay: 40ms; }
+.ticket-item:nth-child(2) { animation-delay: 80ms; }
+.ticket-item:nth-child(3) { animation-delay: 120ms; }
+.ticket-item:nth-child(4) { animation-delay: 160ms; }
+.ticket-item:nth-child(5) { animation-delay: 200ms; }
+
+.ticket-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(74, 120, 255, 0.4);
+  box-shadow: 0 12px 26px rgba(34, 62, 109, 0.14);
 }
 
 .ticket-item.active {
-  border-color: var(--primary);
+  border-color: rgba(47, 90, 255, 0.65);
+  box-shadow: 0 0 0 3px rgba(47, 90, 255, 0.12);
+}
+
+.ticket-item.active .ticket-select {
+  background: linear-gradient(145deg, rgba(47, 90, 255, 0.08), rgba(117, 228, 205, 0.08));
 }
 
 .ticket-select {
@@ -195,11 +364,12 @@ button:disabled {
 .pill {
   display: inline-flex;
   border-radius: 999px;
-  padding: 0.2rem 0.55rem;
+  padding: 0.22rem 0.6rem;
   color: #fff;
   font-size: 0.76rem;
   font-weight: 700;
   white-space: nowrap;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.16);
 }
 
 .status-open {
@@ -305,7 +475,13 @@ button:disabled {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 0.6rem;
-  background: #fcfdff;
+  background: rgba(255, 255, 255, 0.74);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.comment-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(35, 57, 101, 0.12);
 }
 
 .comment-head {
@@ -328,6 +504,101 @@ button:disabled {
   font-size: 0.85rem;
 }
 
+.create-ticket-panel form > label,
+.actions-grid > label,
+.compact {
+  position: relative;
+}
+
+.create-ticket-panel form > label::after,
+.actions-grid > label::after,
+.compact::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(47, 90, 255, 0.65), rgba(85, 210, 182, 0.7));
+  transition: width 260ms ease;
+}
+
+.create-ticket-panel form > label:focus-within::after,
+.actions-grid > label:focus-within::after,
+.compact:focus-within::after {
+  width: 100%;
+}
+
+@keyframes fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes app-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes btn-glint {
+  0%,
+  65% {
+    transform: translateX(-120%);
+  }
+  90%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes blob-float {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0) scale(1);
+  }
+  50% {
+    transform: translateY(-16px) translateX(12px) scale(1.07);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 @media (max-width: 940px) {
   .layout {
     grid-template-columns: 1fr;
@@ -340,5 +611,14 @@ button:disabled {
 
   .compact {
     min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
   }
 }
