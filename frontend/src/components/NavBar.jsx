@@ -46,9 +46,9 @@ export default function NavBar() {
         ))}
 
         {(isTechnician || isAdmin) && (
-          <button type="button" className="sidebar-muted-item" disabled>
+          <Link className={location.pathname.startsWith('/resources') ? 'active' : ''} to="/resources">
             Resources
-          </button>
+          </Link>
         )}
         <button type="button" className="sidebar-muted-item" disabled>
           Bookings

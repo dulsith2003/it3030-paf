@@ -1,0 +1,20 @@
+# Dependency folders
+node_modules/
+dist/
+
+# Build and tool output
+coverage/
+.vite/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/

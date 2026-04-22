@@ -12,6 +12,7 @@ import AdminUsersPage from './pages/AdminUsersPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import ForbiddenPage from './pages/ForbiddenPage';
 import NotFoundPage from './pages/NotFoundPage';
+import ResourcePage from './pages/ResourcePage';
 import TechnicianDashboardPage from './pages/TechnicianDashboardPage';
 import UserDashboardPage from './pages/UserDashboardPage';
 
@@ -80,6 +81,14 @@ export default function App() {
             element={
               <ProtectedRoute roles={["USER", "ADMIN", "TECHNICIAN"]}>
                 <NotificationsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resources"
+            element={
+              <ProtectedRoute roles={["ADMIN", "TECHNICIAN"]}>
+                <ResourcePage />
               </ProtectedRoute>
             }
           />
