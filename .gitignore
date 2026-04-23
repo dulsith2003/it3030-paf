@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build output
+dist/
+frontend/dist/
+smartcampus/target/
+coverage/
+
+# Vite cache
+.vite/
+frontend/.vite/
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# Source maps
+*.map
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Environment
+.env
+.env.*
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db

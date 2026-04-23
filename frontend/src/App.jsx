@@ -1,0 +1,188 @@
+import React from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+
+// Module C – ticket styles (isolated, no existing rules changed)
+import './ticket.css';
+
+import { useAuth } from './auth/AuthProvider';
+import { getDefaultDashboardPath } from './auth/roleRouting';
+import NavBar from './components/NavBar';
+import ProtectedRoute from './auth/ProtectedRoute';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import OAuthSuccess from './pages/OAuthSuccess';
+import NotificationsPage from './pages/NotificationsPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import ForbiddenPage from './pages/ForbiddenPage';
+import NotFoundPage from './pages/NotFoundPage';
+import ResourcePage from './pages/ResourcePage';
+import TechnicianDashboardPage from './pages/TechnicianDashboardPage';
+import UserDashboardPage from './pages/UserDashboardPage';
+import BookingForm from './pages/BookingForm';
+import MyBookings from './pages/MyBookings';
+import AdminBookings from './pages/AdminBookings';
+
+// Module C – Ticket pages
+import MyTickets from './pages/tickets/MyTickets';
+import CreateTicket from './pages/tickets/CreateTicket';
+import AllTickets from './pages/tickets/AllTickets';
+import AssignedTickets from './pages/tickets/AssignedTickets';
+import TicketDetails from './pages/tickets/TicketDetails';
+
+function DashboardRedirect() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div className="panel">Loading session...</div>;
+  }
+
+  return <Navigate to={getDefaultDashboardPath(user)} replace />;
+}
+
+export default function App() {
+  const location = useLocation();
+  const { user } = useAuth();
+  const hideHeaderOnAuthPages = ['/login', '/signup', '/oauth-success'].includes(location.pathname);
+
+  return (
+    <div className={`app-shell ${hideHeaderOnAuthPages ? 'auth-layout' : 'workspace-layout'}`}>
+      {!hideHeaderOnAuthPages && <NavBar />}
+      <main className={`page-wrap ${hideHeaderOnAuthPages ? '' : 'workspace-content'}`}>
+        {!hideHeaderOnAuthPages && (
+          <header className="workspace-topbar">
+            <div className="workspace-search">Search for resources, tickets...</div>
+            <div className="workspace-user-chip">
+              <span className="workspace-user-avatar">{(user?.displayName || user?.email || 'U').charAt(0).toUpperCase()}</span>
+              <div>
+                <strong>{user?.displayName || user?.email || 'User'}</strong>
+              </div>
+            </div>
+          </header>
+        )}
+        <Routes>
+          <Route path="/" element={<DashboardRedirect />} />
+          <Route path="/dashboard" element={<DashboardRedirect />} />
+          <Route
+            path="/dashboard/user"
+            element={
+              <ProtectedRoute roles={["USER"]}>
+                <UserDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/admin"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/technician"
+            element={
+              <ProtectedRoute roles={["TECHNICIAN"]}>
+                <TechnicianDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/oauth-success" element={<OAuthSuccess />} />
+          <Route path="/forbidden" element={<ForbiddenPage />} />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute roles={["USER", "ADMIN", "TECHNICIAN"]}>
+                <NotificationsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resources"
+            element={
+              <ProtectedRoute roles={["ADMIN", "TECHNICIAN"]}>
+                <ResourcePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminUsersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/booking-form"
+            element={
+              <ProtectedRoute roles={["USER"]}>
+                <BookingForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-bookings"
+            element={
+              <ProtectedRoute roles={["USER"]}>
+                <MyBookings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-bookings"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminBookings />
+              </ProtectedRoute>
+            }
+          />
+          {/* ── Module C – Ticket Routes ── */}
+          <Route
+            path="/tickets/my"
+            element={
+              <ProtectedRoute roles={["USER"]}>
+                <MyTickets />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets/create"
+            element={
+              <ProtectedRoute roles={["USER"]}>
+                <CreateTicket />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AllTickets />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets/assigned"
+            element={
+              <ProtectedRoute roles={["TECHNICIAN"]}>
+                <AssignedTickets />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets/:id"
+            element={
+              <ProtectedRoute roles={["USER", "ADMIN", "TECHNICIAN"]}>
+                <TicketDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </main>
+    </div>
+  );
+}

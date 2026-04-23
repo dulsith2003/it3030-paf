@@ -1,63 +1,116 @@
 package com.example.smartcampus.exception;
 
-import com.example.smartcampus.dto.ApiErrorResponse;
-import jakarta.validation.ConstraintViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.server.ResponseStatusException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleNotFound(ResourceNotFoundException exception) {
-        return buildResponse(HttpStatus.NOT_FOUND, exception.getMessage(), null);
-    }
-
-    @ExceptionHandler(ForbiddenOperationException.class)
-    public ResponseEntity<ApiErrorResponse> handleForbidden(ForbiddenOperationException exception) {
-        return buildResponse(HttpStatus.FORBIDDEN, exception.getMessage(), null);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiErrorResponse> handleValidation(MethodArgumentNotValidException exception) {
-        Map<String, String> errors = new LinkedHashMap<>();
-        for (FieldError error : exception.getBindingResult().getFieldErrors()) {
-            errors.put(error.getField(), error.getDefaultMessage());
-        }
-        return buildResponse(HttpStatus.BAD_REQUEST, "Validation failed", errors);
+    public ResponseEntity<ApiError> handleValidation(
+        MethodArgumentNotValidException ex,
+        ServletWebRequest request
+    ) {
+        Map<String, String> fieldErrors = new LinkedHashMap<>();
+        ex.getBindingResult().getFieldErrors()
+            .forEach(err -> fieldErrors.put(err.getField(), err.getDefaultMessage()));
+
+        return ResponseEntity.badRequest().body(buildError(
+            HttpStatus.BAD_REQUEST,
+            "Validation failed",
+            request,
+            fieldErrors
+        ));
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiErrorResponse> handleConstraint(ConstraintViolationException exception) {
-        return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), null);
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiError> handleDuplicate(
+        DuplicateResourceException ex,
+        ServletWebRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+            .body(buildError(HttpStatus.CONFLICT, ex.getMessage(), request, null));
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleNotFound(
+        ResourceNotFoundException ex,
+        ServletWebRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request, null));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDenied(
+        AccessDeniedException ex,
+        ServletWebRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(buildError(HttpStatus.FORBIDDEN, ex.getMessage(), request, null));
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiError> handleAuthentication(
+        AuthenticationException ex,
+        ServletWebRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(buildError(HttpStatus.UNAUTHORIZED, ex.getMessage(), request, null));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiErrorResponse> handleBadRequest(IllegalArgumentException exception) {
-        return buildResponse(HttpStatus.BAD_REQUEST, exception.getMessage(), null);
+    public ResponseEntity<ApiError> handleIllegalArgument(
+        IllegalArgumentException ex,
+        ServletWebRequest request
+    ) {
+        return ResponseEntity.badRequest()
+            .body(buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request, null));
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiError> handleResponseStatus(
+        ResponseStatusException ex,
+        ServletWebRequest request
+    ) {
+        HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
+        return ResponseEntity.status(status)
+            .body(buildError(status, ex.getReason(), request, null));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleUnhandled(Exception exception) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected server error", null);
+    public ResponseEntity<ApiError> handleGeneric(
+        Exception ex,
+        ServletWebRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(buildError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), request, null));
     }
 
-    private ResponseEntity<ApiErrorResponse> buildResponse(HttpStatus status, String message, Map<String, String> validationErrors) {
-        ApiErrorResponse body = new ApiErrorResponse(
+    private ApiError buildError(
+        HttpStatus status,
+        String message,
+        ServletWebRequest request,
+        Map<String, String> fieldErrors
+    ) {
+        return new ApiError(
             Instant.now(),
             status.value(),
             status.getReasonPhrase(),
             message,
-            validationErrors
+            request.getRequest().getRequestURI(),
+            fieldErrors
         );
-        return ResponseEntity.status(status).body(body);
     }
 }
