@@ -18,8 +18,23 @@ const NEXT_STATUS = {
 export default function AssignedTickets() {
     const { user } = useAuth();
     const [tickets, setTickets] = useState([]);
+    const [allTickets, setAllTickets] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [search, setSearch] = useState('');
+
+    // Build the list of identifiers the admin might have typed for this technician
+    function myIdentifiers() {
+        const ids = [];
+        if (user?.email) {
+            ids.push(user.email.toLowerCase());
+            // also add the local part before @  e.g. "john.doe" from "john.doe@campus.com"
+            const local = user.email.split('@')[0];
+            if (local) ids.push(local.toLowerCase());
+        }
+        if (user?.displayName) ids.push(user.displayName.toLowerCase());
+        return ids;
+    }
 
     // ── Status-update modal ───────────────────────────────────────────────────
     const [statusTarget, setStatusTarget] = useState(null);
@@ -36,17 +51,19 @@ export default function AssignedTickets() {
         setLoading(true);
         setError('');
         try {
-            // Pull all tickets (TECHNICIAN can view all) then filter by assigned name
             const data = await getAllTickets(user);
-            const myName = user?.email || user?.displayName || '';
-            const filtered = Array.isArray(data)
-                ? data.filter(
-                    (t) =>
-                        t.assignedTechnician &&
-                        t.assignedTechnician.toLowerCase() === myName.toLowerCase()
-                )
-                : [];
-            setTickets(filtered);
+            const all = Array.isArray(data) ? data : [];
+            setAllTickets(all);
+
+            // Filter: ticket's assignedTechnician contains any of the technician's identifiers
+            const ids = myIdentifiers();
+            const matched = all.filter((t) => {
+                if (!t.assignedTechnician) return false;
+                const assigned = t.assignedTechnician.toLowerCase();
+                // exact match OR any identifier contained within the assigned string
+                return ids.some((id) => assigned.includes(id) || id.includes(assigned));
+            });
+            setTickets(matched);
         } catch (err) {
             setError(err.message || 'Failed to load assigned tickets.');
         } finally {
@@ -83,6 +100,13 @@ export default function AssignedTickets() {
 
     const availableStatuses = Object.values(NEXT_STATUS);
 
+    // ── Manual search filter on top of auto-matched tickets ──────────────────
+    const displayTickets = search.trim()
+        ? allTickets.filter((t) =>
+            t.assignedTechnician?.toLowerCase().includes(search.toLowerCase())
+        )
+        : tickets;
+
     return (
         <section className="panel ticket-panel">
             <div className="ticket-panel-header">
@@ -90,27 +114,42 @@ export default function AssignedTickets() {
                     <h2>Assigned Tickets</h2>
                     <p>Manage the maintenance requests assigned to you.</p>
                 </div>
-                <button
-                    type="button"
-                    className="ticket-btn ticket-btn-secondary"
-                    onClick={loadTickets}
-                    disabled={loading}
-                >
-                    Refresh
-                </button>
+                <div className="ticket-panel-actions">
+                    <input
+                        type="text"
+                        placeholder="Search by technician name…"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        style={{ borderRadius: 10, padding: '0.52rem 0.7rem', border: '1px solid #d0dcff', background: '#f7faff', minWidth: 200 }}
+                    />
+                    <button
+                        type="button"
+                        className="ticket-btn ticket-btn-secondary"
+                        onClick={loadTickets}
+                        disabled={loading}
+                    >
+                        Refresh
+                    </button>
+                </div>
             </div>
 
             {error && <div className="ticket-alert ticket-alert-error">{error}</div>}
 
             {loading ? (
                 <p className="ticket-loading">Loading tickets…</p>
-            ) : tickets.length === 0 ? (
+            ) : displayTickets.length === 0 ? (
                 <div className="ticket-empty-state">
-                    <p>No tickets are currently assigned to you.</p>
+                    <p>No tickets found{search ? ` matching "${search}"` : ' assigned to you'}.</p>
+                    {!search && tickets.length === 0 && allTickets.length > 0 && (
+                        <p style={{ fontSize: '0.85rem', color: '#8398be' }}>
+                            Tip: Ask your admin what name they used when assigning.
+                            Use the search box above to find your tickets.
+                        </p>
+                    )}
                 </div>
             ) : (
                 <div className="ticket-grid">
-                    {tickets.map((t) => (
+                    {displayTickets.map((t) => (
                         <TicketCard
                             key={t.id}
                             ticket={t}

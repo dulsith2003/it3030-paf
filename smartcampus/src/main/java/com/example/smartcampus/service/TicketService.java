@@ -70,7 +70,7 @@ public class TicketService {
     }
 
     public TicketResponse updateStatus(String ticketId, UpdateTicketStatusRequest request, Actor actor) {
-        requireRole(actor, "STAFF", "ADMIN");
+        requireRole(actor, "TECHNICIAN", "STAFF", "ADMIN");
 
         Ticket ticket = findById(ticketId);
         TicketStatus current = ticket.getStatus();
@@ -246,8 +246,12 @@ public class TicketService {
     }
 
     private void requireRole(Actor actor, String... allowedRoles) {
+        String actorRole = actor.userRole() == null ? "" : actor.userRole().trim().toUpperCase(Locale.ROOT);
+        if (actorRole.startsWith("ROLE_")) {
+            actorRole = actorRole.substring(5);
+        }
         for (String role : allowedRoles) {
-            if (role.equalsIgnoreCase(actor.userRole())) {
+            if (role.equalsIgnoreCase(actorRole)) {
                 return;
             }
         }
