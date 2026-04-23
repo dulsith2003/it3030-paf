@@ -130,6 +130,17 @@ public class UserService {
         return toResponse(userRepository.save(user));
     }
 
+    public UserResponse fixLocalPassword(String email, String plainPassword) {
+        String normalized = normalizeEmail(email);
+        User user = userRepository.findByEmailIgnoreCase(normalized)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found for email: " + normalized));
+        
+        user.setPassword(passwordEncoder.encode(plainPassword));
+        user.setProvider(AuthProvider.LOCAL);
+        user.setUpdatedAt(Instant.now());
+        return toResponse(userRepository.save(user));
+    }
+
     public List<UserResponse> listUsers() {
         return userRepository.findAll().stream().map(this::toResponse).toList();
     }

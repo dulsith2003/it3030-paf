@@ -75,4 +75,9 @@ public class AuthController {
 
         return userService.markLocalLogin(authentication.getName());
     }
+
+    @PostMapping("/fix-password")
+    public UserResponse fixPassword(@RequestBody Map<String, String> request) {
+        return userService.fixLocalPassword(request.get("email"), request.get("password"));
+    }
 }
