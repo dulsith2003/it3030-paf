@@ -1,5 +1,6 @@
 package com.example.smartcampus.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import com.example.smartcampus.model.BookingStatus;
 import com.example.smartcampus.repository.BookingRepository;
 
 @Service
+@SuppressWarnings("null")
 public class BookingService {
 
     private final BookingRepository bookingRepository;
@@ -45,6 +47,7 @@ public class BookingService {
             );
         }
 
+        LocalDateTime now = LocalDateTime.now();
         Booking booking = new Booking();
         booking.setResourceId(request.resourceId());
         booking.setUserId(currentUserId);
@@ -52,6 +55,8 @@ public class BookingService {
         booking.setEndTime(request.endTime());
         booking.setPurpose(request.purpose());
         booking.setStatus(BookingStatus.PENDING);
+        booking.setCreatedAt(now);
+        booking.setUpdatedAt(now);
 
         Booking saved = bookingRepository.save(booking);
         return toResponse(saved);
@@ -73,17 +78,18 @@ public class BookingService {
             .toList();
     }
 
-    public BookingResponseDTO approveBooking(Long bookingId) {
+    public BookingResponseDTO approveBooking(String bookingId) {
         requireAdmin();
 
         Booking booking = getBookingById(bookingId);
         booking.setStatus(BookingStatus.APPROVED);
+        booking.setUpdatedAt(LocalDateTime.now());
 
         Booking saved = bookingRepository.save(booking);
         return toResponse(saved);
     }
 
-    public BookingResponseDTO rejectBooking(Long bookingId, String reason) {
+    public BookingResponseDTO rejectBooking(String bookingId, String reason) {
         requireAdmin();
 
         if (reason == null || reason.isBlank()) {
@@ -92,12 +98,13 @@ public class BookingService {
 
         Booking booking = getBookingById(bookingId);
         booking.setStatus(BookingStatus.REJECTED);
+        booking.setUpdatedAt(LocalDateTime.now());
 
         Booking saved = bookingRepository.save(booking);
         return toResponse(saved);
     }
 
-    public BookingResponseDTO cancelBooking(Long bookingId) {
+    public BookingResponseDTO cancelBooking(String bookingId) {
         Booking booking = getBookingById(bookingId);
         String currentUserId = getCurrentUserId();
 
@@ -113,11 +120,12 @@ public class BookingService {
         }
 
         booking.setStatus(BookingStatus.CANCELLED);
+        booking.setUpdatedAt(LocalDateTime.now());
         Booking saved = bookingRepository.save(booking);
         return toResponse(saved);
     }
 
-    private Booking getBookingById(Long bookingId) {
+    private Booking getBookingById(String bookingId) {
         return bookingRepository.findById(bookingId)
             .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
     }

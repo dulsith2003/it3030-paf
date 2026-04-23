@@ -29,6 +29,7 @@ import com.example.smartcampus.model.User;
 import com.example.smartcampus.repository.UserRepository;
 
 @Service
+@SuppressWarnings("null")
 public class UserService {
 
     private final UserRepository userRepository;
@@ -130,6 +131,17 @@ public class UserService {
         return toResponse(userRepository.save(user));
     }
 
+    public UserResponse fixLocalPassword(String email, String plainPassword) {
+        String normalized = normalizeEmail(email);
+        User user = userRepository.findByEmailIgnoreCase(normalized)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found for email: " + normalized));
+        
+        user.setPassword(passwordEncoder.encode(plainPassword));
+        user.setProvider(AuthProvider.LOCAL);
+        user.setUpdatedAt(Instant.now());
+        return toResponse(userRepository.save(user));
+    }
+
     public List<UserResponse> listUsers() {
         return userRepository.findAll().stream().map(this::toResponse).toList();
     }
@@ -173,15 +185,18 @@ public class UserService {
 
     public UserResponse getCurrentUser(Authentication authentication) {
         User user = getCurrentUserEntity(authentication);
-        return toResponse(user);
+        return user != null ? toResponse(user) : null;
     }
 
     public User getCurrentUserEntity(Authentication authentication) {
-        String email = extractEmailFromAuthentication(authentication)
-            .orElseThrow(() -> new IllegalArgumentException("Authenticated user email is missing"));
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return null;
+        }
 
-        return userRepository.findByEmailIgnoreCase(email)
-            .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+        String email = extractEmailFromAuthentication(authentication).orElse(null);
+        if (email == null) return null;
+
+        return userRepository.findByEmailIgnoreCase(email).orElse(null);
     }
 
     public UserResponse toResponse(User user) {

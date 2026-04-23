@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import com.example.smartcampus.model.BookingStatus;
 
 public record BookingResponseDTO(
-    Long id,
-    Long resourceId,
+    String id,
+    String resourceId,
     String userId,
     LocalDateTime startTime,
     LocalDateTime endTime,

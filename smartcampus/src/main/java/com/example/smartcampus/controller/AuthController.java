@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
 import com.example.smartcampus.dto.user.SignInRequest;
@@ -46,12 +46,12 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public UserResponse currentUser(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+    public ResponseEntity<UserResponse> currentUser(Authentication authentication) {
+        UserResponse user = userService.getCurrentUser(authentication);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
-        return userService.getCurrentUser(authentication);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/signup")
@@ -74,5 +74,10 @@ public class AuthController {
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
 
         return userService.markLocalLogin(authentication.getName());
+    }
+
+    @PostMapping("/fix-password")
+    public UserResponse fixPassword(@RequestBody Map<String, String> request) {
+        return userService.fixLocalPassword(request.get("email"), request.get("password"));
     }
 }

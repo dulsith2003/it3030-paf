@@ -45,7 +45,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{id}/cancel")
-    public BookingResponseDTO cancelBooking(@PathVariable Long id) {
+    public BookingResponseDTO cancelBooking(@PathVariable String id) {
         return bookingService.cancelBooking(id);
     }
 
@@ -56,14 +56,14 @@ public class BookingController {
     }
 
     @PatchMapping("/{id}/approve")
-    public BookingResponseDTO approveBooking(@PathVariable Long id, Authentication authentication) {
+    public BookingResponseDTO approveBooking(@PathVariable String id, Authentication authentication) {
         requireAdmin(authentication);
         return bookingService.approveBooking(id);
     }
 
     @PatchMapping("/{id}/reject")
     public BookingResponseDTO rejectBooking(
-        @PathVariable Long id,
+        @PathVariable String id,
         @Valid @RequestBody RejectBookingRequest request,
         Authentication authentication
     ) {

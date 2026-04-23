@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -60,6 +61,15 @@ public class GlobalExceptionHandler {
             .body(buildError(HttpStatus.FORBIDDEN, ex.getMessage(), request, null));
     }
 
+    @ExceptionHandler(ForbiddenOperationException.class)
+    public ResponseEntity<ApiError> handleForbiddenOperation(
+        ForbiddenOperationException ex,
+        ServletWebRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(buildError(HttpStatus.FORBIDDEN, ex.getMessage(), request, null));
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthentication(
         AuthenticationException ex,
@@ -76,6 +86,16 @@ public class GlobalExceptionHandler {
     ) {
         return ResponseEntity.badRequest()
             .body(buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request, null));
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiError> handleResponseStatus(
+        ResponseStatusException ex,
+        ServletWebRequest request
+    ) {
+        HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
+        return ResponseEntity.status(status)
+            .body(buildError(status, ex.getReason(), request, null));
     }
 
     @ExceptionHandler(Exception.class)

@@ -1,7 +1,6 @@
 package com.example.smartcampus.config;
 
-import java.util.Arrays;
-import java.util.List;
+
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,9 +9,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -23,10 +22,10 @@ import com.example.smartcampus.service.LocalUserDetailsService;
 @Configuration
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
     private final LocalUserDetailsService localUserDetailsService;
     private final CorsConfigurationSource corsConfigurationSource;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     public SecurityConfig(
         CustomOAuth2UserService customOAuth2UserService,
@@ -45,7 +44,6 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .exceptionHandling(exception ->
                 exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             )
@@ -55,8 +53,15 @@ public class SecurityConfig {
                     "/error",
                     "/api/auth/**",
                     "/oauth2/**",
-                    "/login/**"
+                    "/login/**",
+                    "/api/resources/**",
+                    "/api/bookings/**"
                 ).permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/resources/search").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/resources/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/resources").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/resources/**").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/api/resources/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/notifications/**").hasAnyRole("USER", "ADMIN", "TECHNICIAN")
                 .anyRequest().authenticated()
@@ -79,7 +84,8 @@ public class SecurityConfig {
 
     @Bean
     DaoAuthenticationProvider daoAuthenticationProvider(PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(localUserDetailsService);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(localUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }

@@ -8,11 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record BookingRequestDTO(
-    @NotNull(message = "resourceId is required")
-    Long resourceId,
-
-    @NotBlank(message = "userId is required")
-    String userId,
+    @NotBlank(message = "resourceId is required")
+    String resourceId,
 
     @NotNull(message = "startTime is required")
     @Future(message = "startTime must be in the future")

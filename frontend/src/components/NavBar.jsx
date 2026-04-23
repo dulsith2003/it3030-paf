@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../auth/AuthProvider';
-import { getDashboardLabelForUser, getDefaultDashboardPath, getPrimaryRole } from '../auth/roleRouting';
+import { getDefaultDashboardPath, getPrimaryRole } from '../auth/roleRouting';
 
 export default function NavBar() {
   const location = useLocation();
@@ -15,11 +15,14 @@ export default function NavBar() {
 
   const navItems = [
     { to: dashboardPath, label: 'Dashboard', isActive: location.pathname.startsWith('/dashboard') },
-    { to: '/notifications', label: 'Notifications', isActive: location.pathname.startsWith('/notifications') }
+    { to: '/notifications', label: 'Notifications', isActive: location.pathname.startsWith('/notifications') },
+    { to: '/booking-form', label: 'Booking Form', isActive: location.pathname.startsWith('/booking-form') },
+    { to: '/my-bookings', label: 'My Bookings', isActive: location.pathname.startsWith('/my-bookings') }
   ];
 
   if (isAdmin) {
     navItems.push({ to: '/admin/users', label: 'Admin Users', isActive: location.pathname.startsWith('/admin/users') });
+    navItems.push({ to: '/admin-bookings', label: 'Admin Bookings', isActive: location.pathname.startsWith('/admin-bookings') });
   }
 
   async function handleLogout() {
@@ -41,16 +44,26 @@ export default function NavBar() {
         ))}
 
         {(isTechnician || isAdmin) && (
-          <button type="button" className="sidebar-muted-item" disabled>
+          <Link className={location.pathname.startsWith('/resources') ? 'active' : ''} to="/resources">
             Resources
-          </button>
+          </Link>
         )}
-        <button type="button" className="sidebar-muted-item" disabled>
-          Bookings
-        </button>
         <button type="button" className="sidebar-muted-item" disabled>
           Incidents
         </button>
+        {/* Module C – Tickets link */}
+        <Link
+          className={location.pathname.startsWith('/tickets') ? 'active' : ''}
+          to={
+            isAdmin
+              ? '/tickets'
+              : isTechnician
+                ? '/tickets/assigned'
+                : '/tickets/my'
+          }
+        >
+          🎫 Tickets
+        </Link>
       </nav>
 
       <div className="sidebar-footer">

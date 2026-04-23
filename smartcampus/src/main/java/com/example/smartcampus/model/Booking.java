@@ -2,78 +2,44 @@ package com.example.smartcampus.model;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "bookings")
+@Document(collection = "bookings")
 public class Booking {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false)
-    private Long resourceId;
+    private String resourceId;
 
-    @Column(nullable = false)
     private String userId;
 
-    @Column(nullable = false)
     private LocalDateTime startTime;
 
-    @Column(nullable = false)
     private LocalDateTime endTime;
 
-    @Column(length = 500)
     private String purpose;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private BookingStatus status;
 
-    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
-        this.createdAt = now;
-        this.updatedAt = now;
-        if (this.status == null) {
-            this.status = BookingStatus.PENDING;
-        }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Long getResourceId() {
+    public String getResourceId() {
         return resourceId;
     }
 
-    public void setResourceId(Long resourceId) {
+    public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
     }
 

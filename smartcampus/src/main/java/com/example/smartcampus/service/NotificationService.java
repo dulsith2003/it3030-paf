@@ -19,6 +19,7 @@ import com.example.smartcampus.repository.NotificationRepository;
 import com.example.smartcampus.repository.UserRepository;
 
 @Service
+@SuppressWarnings("null")
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
