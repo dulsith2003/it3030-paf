@@ -61,6 +61,15 @@ public class GlobalExceptionHandler {
             .body(buildError(HttpStatus.FORBIDDEN, ex.getMessage(), request, null));
     }
 
+    @ExceptionHandler(ForbiddenOperationException.class)
+    public ResponseEntity<ApiError> handleForbiddenOperation(
+        ForbiddenOperationException ex,
+        ServletWebRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            .body(buildError(HttpStatus.FORBIDDEN, ex.getMessage(), request, null));
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthentication(
         AuthenticationException ex,

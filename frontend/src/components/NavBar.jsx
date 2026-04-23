@@ -51,6 +51,19 @@ export default function NavBar() {
         <button type="button" className="sidebar-muted-item" disabled>
           Incidents
         </button>
+        {/* Module C – Tickets link */}
+        <Link
+          className={location.pathname.startsWith('/tickets') ? 'active' : ''}
+          to={
+            isAdmin
+              ? '/tickets'
+              : isTechnician
+                ? '/tickets/assigned'
+                : '/tickets/my'
+          }
+        >
+          🎫 Tickets
+        </Link>
       </nav>
 
       <div className="sidebar-footer">
