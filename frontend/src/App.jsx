@@ -16,6 +16,9 @@ import NotFoundPage from './pages/NotFoundPage';
 import ResourcePage from './pages/ResourcePage';
 import TechnicianDashboardPage from './pages/TechnicianDashboardPage';
 import UserDashboardPage from './pages/UserDashboardPage';
+import BookingForm from './pages/BookingForm';
+import MyBookings from './pages/MyBookings';
+import AdminBookings from './pages/AdminBookings';
 
 function DashboardRedirect() {
   const { user, loading } = useAuth();
@@ -99,6 +102,30 @@ export default function App() {
             element={
               <ProtectedRoute roles={["ADMIN"]}>
                 <AdminUsersPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/booking-form"
+            element={
+              <ProtectedRoute roles={["USER"]}>
+                <BookingForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-bookings"
+            element={
+              <ProtectedRoute roles={["USER"]}>
+                <MyBookings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-bookings"
+            element={
+              <ProtectedRoute roles={["ADMIN"]}>
+                <AdminBookings />
               </ProtectedRoute>
             }
           />

@@ -857,6 +857,241 @@ button.secondary {
   font-weight: 500;
 }
 
+.table-wrap {
+  margin-top: 0.9rem;
+  overflow-x: auto;
+}
+
+.booking-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.booking-table th,
+.booking-table td {
+  border-bottom: 1px solid #e6ecfb;
+  text-align: left;
+  padding: 0.65rem 0.7rem;
+  vertical-align: top;
+}
+
+.booking-table th {
+  background: #f8faff;
+  color: #2d4b83;
+  font-size: 0.9rem;
+}
+
+.booking-table td .row-actions {
+  margin-top: 0;
+}
+
+.booking-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.booking-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.booking-header h2 {
+  margin: 0;
+}
+
+.booking-header p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+}
+
+.booking-chip {
+  border: 1px solid #d9e5ff;
+  background: #f4f7ff;
+  color: #2a4a88;
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.booking-alert {
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+}
+
+.booking-alert-error {
+  background: #fff1f4;
+  border: 1px solid #ffd1dc;
+  color: #a61f47;
+}
+
+.booking-alert-success {
+  background: #effbf4;
+  border: 1px solid #ccefd8;
+  color: #17663f;
+}
+
+.booking-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.booking-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.booking-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.booking-field span {
+  font-weight: 700;
+  color: #17366d;
+}
+
+.booking-field small {
+  line-height: 1.4;
+}
+
+.booking-field-full {
+  grid-column: 1 / -1;
+}
+
+.booking-field textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.booking-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.booking-form-actions small {
+  max-width: 640px;
+}
+
+.booking-submit {
+  min-width: 170px;
+}
+
+.booking-loading {
+  margin: 0;
+  color: var(--muted);
+}
+
+.booking-empty-state {
+  padding: 1rem 0.25rem;
+  display: grid;
+  gap: 0.2rem;
+  justify-items: center;
+  text-align: center;
+  color: var(--muted);
+}
+
+.booking-empty-state strong {
+  color: var(--text);
+}
+
+.booking-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  padding: 0.34rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.booking-badge-pending {
+  background: #fff5cf;
+  color: #876100;
+}
+
+.booking-badge-approved {
+  background: #def8e9;
+  color: #11633a;
+}
+
+.booking-badge-rejected {
+  background: #ffe1e8;
+  color: #9f1f42;
+}
+
+.booking-badge-cancelled {
+  background: #edf1fb;
+  color: #4a638e;
+}
+
+.booking-action-group {
+  margin-top: 0;
+}
+
+.booking-filters {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.filter-group {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.filter-group label {
+  display: grid;
+  gap: 0.3rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.filter-group select,
+.filter-group input {
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.field-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.booking-table td {
+  white-space: nowrap;
+}
+
+.booking-table td:nth-child(5),
+.booking-table td:nth-child(8),
+.booking-table td:nth-child(9) {
+  white-space: normal;
+  min-width: 160px;
+}
+
+.booking-table td:nth-child(6),
+.booking-table td:nth-child(7) {
+  white-space: normal;
+}
+
 .error {
   color: var(--danger);
   font-weight: 700;
@@ -1002,5 +1237,32 @@ small {
 
   .student-support-card h3 {
     font-size: 1.4rem;
+  }
+
+  .booking-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-form-actions {
+    align-items: stretch;
+  }
+
+  .booking-submit {
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .booking-table {
+    min-width: 940px;
+  }
+
+  .booking-header {
+    flex-direction: column;
+  }
+
+  .booking-chip {
+    width: 100%;
+    text-align: center;
   }
 }

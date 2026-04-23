@@ -1,18 +1,20 @@
 package com.example.smartcampus.dto.booking;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import com.example.smartcampus.model.BookingStatus;
 
 public record BookingResponseDTO(
-    Long id,
-    Long resourceId,
+    String id,
+    String resourceId,
     String userId,
-    LocalDateTime startTime,
-    LocalDateTime endTime,
+    LocalDate date,
+    LocalTime startTime,
+    LocalTime endTime,
     String purpose,
+    Integer expectedAttendees,
     BookingStatus status,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt
+    String adminReason
 ) {
 }
