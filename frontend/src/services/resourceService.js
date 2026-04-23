@@ -17,6 +17,11 @@ export async function createResource(payload) {
   return response.data;
 }
 
+export async function updateResource(id, payload) {
+  const response = await api.put(`/api/resources/${id}`, payload);
+  return response.data;
+}
+
 export async function deleteResource(id) {
   await api.delete(`/api/resources/${id}`);
 }
@@ -34,6 +39,6 @@ export async function searchResources(filters) {
     params.capacity = filters.capacity;
   }
 
-  const response = await api.get("/api/resources", { params });
+  const response = await api.get("/api/resources/search", { params });
   return Array.isArray(response.data) ? response.data : [];
 }

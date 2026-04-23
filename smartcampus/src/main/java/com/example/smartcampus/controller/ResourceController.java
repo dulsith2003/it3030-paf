@@ -3,7 +3,7 @@ package com.example.smartcampus.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +20,6 @@ import com.example.smartcampus.service.ResourceService;
 
 @RestController
 @RequestMapping("/api/resources")
-@CrossOrigin(origins = "*")
 public class ResourceController {
 
     private final ResourceService resourceService;
