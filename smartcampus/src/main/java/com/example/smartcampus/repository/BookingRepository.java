@@ -1,24 +1,28 @@
 package com.example.smartcampus.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.example.smartcampus.model.Booking;
+import com.example.smartcampus.model.BookingStatus;
 
 public interface BookingRepository extends MongoRepository<Booking, String> {
 
     List<Booking> findByUserId(String userId);
 
-    List<Booking> findByResourceIdAndDate(String resourceId, java.time.LocalDate date);
+    List<Booking> findByResourceId(String resourceId);
 
-    List<Booking> findByResourceIdAndDateAndStartTimeLessThanAndEndTimeGreaterThan(
+    List<Booking> findByStatus(BookingStatus status);
+
+    List<Booking> findByResourceIdAndStatus(String resourceId, BookingStatus status);
+
+    List<Booking> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
+
+    List<Booking> findByResourceIdAndStartTimeLessThanAndEndTimeGreaterThan(
         String resourceId,
-        LocalDate date,
-        LocalTime endTime,
-        LocalTime startTime
+        LocalDateTime endTime,
+        LocalDateTime startTime
     );
 }

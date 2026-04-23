@@ -1,7 +1,6 @@
 package com.example.smartcampus.config;
 
-import java.util.Arrays;
-import java.util.List;
+
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,6 +57,11 @@ public class SecurityConfig {
                     "/api/resources/**",
                     "/api/bookings/**"
                 ).permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/resources/search").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/resources/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/resources").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/resources/**").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/api/resources/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/notifications/**").hasAnyRole("USER", "ADMIN", "TECHNICIAN")
                 .anyRequest().authenticated()
@@ -80,7 +84,8 @@ public class SecurityConfig {
 
     @Bean
     DaoAuthenticationProvider daoAuthenticationProvider(PasswordEncoder passwordEncoder) {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(localUserDetailsService);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(localUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }

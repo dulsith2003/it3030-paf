@@ -59,12 +59,12 @@ public class User {
         this.avatarUrl = avatarUrl;
     }
 
-    public AuthProvider getAuthProvider() {
-        return provider;
+    public String getPassword() {
+        return password;
     }
 
-    public void setAuthProvider(AuthProvider authProvider) {
-        this.provider = authProvider;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public AuthProvider getProvider() {
@@ -75,20 +75,9 @@ public class User {
         this.provider = provider;
     }
 
-    public String getPasswordHash() {
-        return password;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.password = passwordHash;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    // Alias for getProvider if needed by legacy code
+    public AuthProvider getAuthProvider() {
+        return provider;
     }
 
     public String getProviderId() {

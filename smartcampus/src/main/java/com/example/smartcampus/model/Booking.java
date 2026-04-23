@@ -1,7 +1,6 @@
 package com.example.smartcampus.model;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,19 +15,17 @@ public class Booking {
 
     private String userId;
 
-    private LocalDate date;
+    private LocalDateTime startTime;
 
-    private LocalTime startTime;
-
-    private LocalTime endTime;
+    private LocalDateTime endTime;
 
     private String purpose;
 
-    private Integer expectedAttendees;
-
     private BookingStatus status;
 
-    private String adminReason;
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     public String getId() {
         return id;
@@ -54,27 +51,19 @@ public class Booking {
         this.userId = userId;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public LocalTime getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalTime startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalTime getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalTime endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 
@@ -86,14 +75,6 @@ public class Booking {
         this.purpose = purpose;
     }
 
-    public Integer getExpectedAttendees() {
-        return expectedAttendees;
-    }
-
-    public void setExpectedAttendees(Integer expectedAttendees) {
-        this.expectedAttendees = expectedAttendees;
-    }
-
     public BookingStatus getStatus() {
         return status;
     }
@@ -102,11 +83,19 @@ public class Booking {
         this.status = status;
     }
 
-    public String getAdminReason() {
-        return adminReason;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setAdminReason(String adminReason) {
-        this.adminReason = adminReason;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

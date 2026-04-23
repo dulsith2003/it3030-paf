@@ -46,12 +46,12 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public UserResponse currentUser(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+    public ResponseEntity<UserResponse> currentUser(Authentication authentication) {
+        UserResponse user = userService.getCurrentUser(authentication);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
-        return userService.getCurrentUser(authentication);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/signup")
