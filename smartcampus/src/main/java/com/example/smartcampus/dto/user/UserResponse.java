@@ -12,6 +12,7 @@ public record UserResponse(
     String displayName,
     String avatarUrl,
     AuthProvider authProvider,
+    String providerId,
     Set<Role> roles,
     Instant lastLoginAt,
     Instant createdAt,

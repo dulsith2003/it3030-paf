@@ -48,6 +48,7 @@ public class UserService {
     public User syncOAuthUser(OAuth2User oauth2User) {
         String email = normalizeEmail(extractEmailFromAttributes(oauth2User.getAttributes()));
         Instant now = Instant.now();
+        String providerId = oauth2User.getName();
 
         User user = userRepository.findByEmailIgnoreCase(email).orElseGet(User::new);
         boolean isNewUser = user.getId() == null;
@@ -55,7 +56,9 @@ public class UserService {
         user.setEmail(email);
         user.setDisplayName((String) oauth2User.getAttributes().getOrDefault("name", email));
         user.setAvatarUrl((String) oauth2User.getAttributes().get("picture"));
-        user.setAuthProvider(AuthProvider.GOOGLE);
+        user.setProvider(AuthProvider.GOOGLE);
+        user.setProviderId(providerId);
+        user.setPassword(null);
         user.setLastLoginAt(now);
         user.setUpdatedAt(now);
 
@@ -86,8 +89,9 @@ public class UserService {
         user.setEmail(email);
         user.setDisplayName(request.displayName());
         user.setAvatarUrl(request.avatarUrl());
-        user.setAuthProvider(AuthProvider.LOCAL);
-        user.setPasswordHash(null);
+        user.setProvider(AuthProvider.LOCAL);
+        user.setProviderId(null);
+        user.setPassword(null);
         user.setRoles(new HashSet<>(request.roles()));
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
@@ -106,8 +110,9 @@ public class UserService {
         user.setEmail(email);
         user.setDisplayName(request.displayName());
         user.setAvatarUrl(null);
-        user.setAuthProvider(AuthProvider.LOCAL);
-        user.setPasswordHash(passwordEncoder.encode(request.password()));
+        user.setProvider(AuthProvider.LOCAL);
+        user.setProviderId(null);
+        user.setPassword(passwordEncoder.encode(request.password()));
         user.setRoles(new HashSet<>(Set.of(request.role())));
         user.setCreatedAt(now);
         user.setUpdatedAt(now);
@@ -186,6 +191,7 @@ public class UserService {
             user.getDisplayName(),
             user.getAvatarUrl(),
             user.getAuthProvider(),
+            user.getProviderId(),
             user.getRoles(),
             user.getLastLoginAt(),
             user.getCreatedAt(),

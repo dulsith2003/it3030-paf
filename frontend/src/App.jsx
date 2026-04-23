@@ -7,11 +7,13 @@ import NavBar from './components/NavBar';
 import ProtectedRoute from './auth/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import OAuthSuccess from './pages/OAuthSuccess';
 import NotificationsPage from './pages/NotificationsPage';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import ForbiddenPage from './pages/ForbiddenPage';
 import NotFoundPage from './pages/NotFoundPage';
+import ResourcePage from './pages/ResourcePage';
 import TechnicianDashboardPage from './pages/TechnicianDashboardPage';
 import UserDashboardPage from './pages/UserDashboardPage';
 import BookingForm from './pages/BookingForm';
@@ -31,7 +33,7 @@ function DashboardRedirect() {
 export default function App() {
   const location = useLocation();
   const { user } = useAuth();
-  const hideHeaderOnAuthPages = location.pathname === '/login' || location.pathname === '/signup';
+  const hideHeaderOnAuthPages = ['/login', '/signup', '/oauth-success'].includes(location.pathname);
 
   return (
     <div className={`app-shell ${hideHeaderOnAuthPages ? 'auth-layout' : 'workspace-layout'}`}>
@@ -77,12 +79,21 @@ export default function App() {
           />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/oauth-success" element={<OAuthSuccess />} />
           <Route path="/forbidden" element={<ForbiddenPage />} />
           <Route
             path="/notifications"
             element={
               <ProtectedRoute roles={["USER", "ADMIN", "TECHNICIAN"]}>
                 <NotificationsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/resources"
+            element={
+              <ProtectedRoute roles={["ADMIN", "TECHNICIAN"]}>
+                <ResourcePage />
               </ProtectedRoute>
             }
           />

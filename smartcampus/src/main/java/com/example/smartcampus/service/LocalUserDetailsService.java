@@ -28,7 +28,7 @@ public class LocalUserDetailsService implements UserDetailsService {
         com.example.smartcampus.model.User localUser = userRepository.findByEmailIgnoreCase(username)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        if (localUser.getAuthProvider() != AuthProvider.LOCAL || localUser.getPasswordHash() == null) {
+        if (localUser.getProvider() != AuthProvider.LOCAL || localUser.getPassword() == null) {
             throw new UsernameNotFoundException("Local credentials not available");
         }
 
@@ -38,7 +38,7 @@ public class LocalUserDetailsService implements UserDetailsService {
 
         return User.builder()
             .username(localUser.getEmail())
-            .password(localUser.getPasswordHash())
+            .password(localUser.getPassword())
             .authorities(authorities)
             .build();
     }

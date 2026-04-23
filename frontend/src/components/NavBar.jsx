@@ -1,12 +1,11 @@
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../auth/AuthProvider';
 import { getDefaultDashboardPath, getPrimaryRole } from '../auth/roleRouting';
 
 export default function NavBar() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   const isAdmin = user?.roles?.includes('ADMIN');
@@ -27,11 +26,7 @@ export default function NavBar() {
   }
 
   async function handleLogout() {
-    try {
-      await logout();
-    } finally {
-      navigate('/login');
-    }
+    await logout();
   }
 
   return (
@@ -49,9 +44,9 @@ export default function NavBar() {
         ))}
 
         {(isTechnician || isAdmin) && (
-          <button type="button" className="sidebar-muted-item" disabled>
+          <Link className={location.pathname.startsWith('/resources') ? 'active' : ''} to="/resources">
             Resources
-          </button>
+          </Link>
         )}
         <button type="button" className="sidebar-muted-item" disabled>
           Incidents
