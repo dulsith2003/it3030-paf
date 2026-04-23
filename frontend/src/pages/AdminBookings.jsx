@@ -10,6 +10,8 @@ function getStatusClass(status) {
       return 'rejected';
     case 'CANCELLED':
       return 'cancelled';
+    case 'COMPLETED':
+      return 'completed';
     default:
       return 'pending';
   }

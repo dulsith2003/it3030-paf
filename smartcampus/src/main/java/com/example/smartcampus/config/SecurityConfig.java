@@ -26,6 +26,7 @@ public class SecurityConfig {
     private final LocalUserDetailsService localUserDetailsService;
     private final CorsConfigurationSource corsConfigurationSource;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     public SecurityConfig(
         CustomOAuth2UserService customOAuth2UserService,
@@ -33,6 +34,7 @@ public class SecurityConfig {
         CorsConfigurationSource corsConfigurationSource,
         OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler
     ) {
+        this.customOAuth2UserService = customOAuth2UserService;
         this.localUserDetailsService = localUserDetailsService;
         this.corsConfigurationSource = corsConfigurationSource;
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
