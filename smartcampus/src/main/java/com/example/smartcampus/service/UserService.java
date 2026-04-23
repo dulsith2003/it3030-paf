@@ -29,6 +29,7 @@ import com.example.smartcampus.model.User;
 import com.example.smartcampus.repository.UserRepository;
 
 @Service
+@SuppressWarnings("null")
 public class UserService {
 
     private final UserRepository userRepository;

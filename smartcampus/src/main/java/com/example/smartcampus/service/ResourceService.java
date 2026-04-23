@@ -10,6 +10,7 @@ import com.example.smartcampus.model.ResourceType;
 import com.example.smartcampus.repository.ResourceRepository;
 
 @Service
+@SuppressWarnings("null")
 public class ResourceService {
 
 	private final ResourceRepository resourceRepository;

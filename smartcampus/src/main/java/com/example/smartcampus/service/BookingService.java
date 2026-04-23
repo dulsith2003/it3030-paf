@@ -17,6 +17,7 @@ import com.example.smartcampus.model.BookingStatus;
 import com.example.smartcampus.repository.BookingRepository;
 
 @Service
+@SuppressWarnings("null")
 public class BookingService {
 
     private final BookingRepository bookingRepository;
