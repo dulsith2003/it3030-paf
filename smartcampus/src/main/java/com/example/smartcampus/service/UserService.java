@@ -173,15 +173,18 @@ public class UserService {
 
     public UserResponse getCurrentUser(Authentication authentication) {
         User user = getCurrentUserEntity(authentication);
-        return toResponse(user);
+        return user != null ? toResponse(user) : null;
     }
 
     public User getCurrentUserEntity(Authentication authentication) {
-        String email = extractEmailFromAuthentication(authentication)
-            .orElseThrow(() -> new IllegalArgumentException("Authenticated user email is missing"));
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            return null;
+        }
 
-        return userRepository.findByEmailIgnoreCase(email)
-            .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+        String email = extractEmailFromAuthentication(authentication).orElse(null);
+        if (email == null) return null;
+
+        return userRepository.findByEmailIgnoreCase(email).orElse(null);
     }
 
     public UserResponse toResponse(User user) {
