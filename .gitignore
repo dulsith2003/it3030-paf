@@ -1,31 +1,32 @@
-# Dependencies
+# Dependency folders
 node_modules/
 frontend/node_modules/
-
-# Build output
 dist/
 frontend/dist/
-smartcampus/target/
 
-# Vite cache
+# Build and tool output
+smartcampus/target/
+coverage/
 .vite/
 frontend/.vite/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor settings
+.vscode/
+.idea/
+*.iml
 
 # Logs
 *.log
 
 # Source maps
 *.map
-
-# IDE
-.vscode/
-.idea/
-*.iml
-
-# Environment
-.env
-.env.local
-
-# OS files
-.DS_Store
-Thumbs.db
